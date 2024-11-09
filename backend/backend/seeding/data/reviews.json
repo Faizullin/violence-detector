@@ -1,0 +1,47 @@
+[
+  {
+    "tour_package_id": 1,
+    "author_id": 1,
+    "rating": 3,
+    "comment": "I had the pleasure of ending my work and travel program with an incredible trip organized by Easytrip...",
+    "image": "img/review-1.png",
+    "first_name": "Rakhman",
+    "last_name": "Kadyrov, NU student"
+  },
+  {
+    "tour_package_id": 1,
+    "author_id": 1,
+    "rating": 3,
+    "comment": "Hi all!\nIn 2023, I was lucky enough to be a part of the Work and Travel program and moreover...",
+    "image": "img/review-2.png",
+    "first_name": "Miras",
+    "last_name": "Kuzar, NU student"
+  },
+  {
+    "tour_package_id": 1,
+    "author_id": 1,
+    "rating": 6,
+    "comment": "In 2023, I had the incredible opportunity to participate in the Work and Travel program in the United States...",
+    "image": "img/review-3.png",
+    "first_name": "Sanjar",
+    "last_name": "Meldeshov, NU student"
+  },
+  {
+    "tour_package_id": 1,
+    "author_id": 1,
+    "rating": 4,
+    "comment": "In 2023, I had the incredible opportunity to participate in the Work and Travel program in the United States...",
+    "image": "img/review-4.png",
+    "first_name": "Sanjar",
+    "last_name": "Meldeshov, NU student"
+  },
+  {
+    "tour_package_id": 1,
+    "author_id": 1,
+    "rating": 9,
+    "comment": "In 2023, I had the incredible opportunity to participate in the Work and Travel program in the United States...",
+    "image": "img/review-0.png",
+    "first_name": "Sanjar",
+    "last_name": "Meldeshov, NU student"
+  }
+]

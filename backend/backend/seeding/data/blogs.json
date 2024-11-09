@@ -1,0 +1,23 @@
+[
+  {
+    "title": "Explore Europe with EasyTrip: Upcoming Tours",
+    "description": "Discover the timeless beauty and rich history of Europe with EasyTrip's upcoming tours. We've handpicked some of the continent's most iconic cities to ensure an unforgettable journey:",
+    "content": "Content: Discover the timeless beauty and rich history of Europe with EasyTrip's upcoming tours. We've handpicked some of the continent's most iconic cities to ensure an unforgettable journey:",
+    "author_id": 1,
+    "image": "img/blog-1.png"
+  },
+  {
+    "title": "Upcoming USA Tours with EasyTrip",
+    "description": "Experience the best of the United States with EasyTrip's upcoming tours, carefully curated to showcase the diverse beauty and excitement of this vast country. Get ready to embark on unforgettable adventures in some of America's most iconic states and cities:",
+    "content": "Experience the best of the United States with EasyTrip's upcoming tours, carefully curated to showcase the diverse beauty and excitement of this vast country. Get ready to embark on unforgettable adventures in some of America's most iconic states and cities:",
+    "author_id": 1,
+    "image": "img/blog-2.png"
+  },
+  {
+    "title": "Exploring California and Nevada on a Budget: The Price of an iPhone",
+    "description": "In the land of golden sunsets and shimmering desert landscapes, embarking on a journey through California and Nevada for the cost of an iPhone promises an adventure like no other. Here's how you can make the most of your trip while keeping expenses low:",
+    "content": "",
+    "author_id": 1,
+    "image": "img/blog-3.png"
+  }
+]

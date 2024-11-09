@@ -1,0 +1,14 @@
+# jupyter
+numpy
+# pyheif
+requests
+matplotlib
+whatimage
+Pillow
+# opencv-python==4.5.3.56
+opencv-python
+pyaml
+PyYAML
+# torch==1.7.1
+git+https://github.com/openai/CLIP.git
+python-dotenv

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/svg+xml" href="{{ FRONTEND_APP_BASE_URL }}/vite.svg"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="title" content="{{ product.meta_title }}">
+    <meta name="keywords" content="{{ product.meta_keywords }}">
+    <meta name="description" content="{{ product.meta_description }}">
+    <title>{{ product.meta_title }}</title>
+    <script type="module">
+        import RefreshRuntime from 'http://localhost:5173/@react-refresh'
+
+        if (RefreshRuntime) {
+            RefreshRuntime.injectIntoGlobalHook(window)
+            window.$RefreshReg$ = () => {
+            }
+            window.$RefreshSig$ = () => (type) => type
+            window.__vite_plugin_react_preamble_installed__ = true
+        }
+    </script>
+</head>
+<body>
+<div id="root"></div>
+<script type="module" src="{{ FRONTEND_APP_BASE_URL }}/src/main.tsx"></script>
+</body>
+</html>

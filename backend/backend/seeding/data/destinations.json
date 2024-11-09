@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Welcome to Los Angeles!",
+    "description": "Get ready for an unforgettable adventure as we kick off our trip with a warm welcome at LAX...",
+    "day": 1,
+    "image": "img/destination-1.png"
+  },
+  {
+    "name": "Welcome to Los Angeles!",
+    "description": "Get ready for an unforgettable adventure as we kick off our trip with a warm welcome at LAX...",
+    "day": 2,
+    "image": "img/destination-2.png"
+  },
+  {
+    "name": "Welcome to Los Angeles!",
+    "description": "Get ready for an unforgettable adventure as we kick off our trip with a warm welcome at LAX...",
+    "day": 3,
+    "image": "img/destination-3.png"
+  },
+  {
+    "name": "Welcome to Los Angeles!",
+    "description": "Get ready for an unforgettable adventure as we kick off our trip with a warm welcome at LAX...",
+    "day": 4,
+    "image": "img/destination-4.png"
+  }
+]

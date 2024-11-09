@@ -1,0 +1,41 @@
+<!-- templates/admin/soft_deleted_items.html -->
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block content %}
+    <h1>Soft Deleted Items</h1>
+    <form method="get">
+        <input type="text" name="search" placeholder="Search..." value="{{ search_query }}">
+        <button type="submit">Search</button>
+    </form>
+    <table class="model-list-table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            {#            <th>Model</th>#}
+            <th>Name</th>
+            <th>Deleted At
+                <a href="?sort={% if sort_field == 'deleted_at' %}-deleted_at{% else %}deleted_at{% endif %}">&#9650;</a>
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+{% endblock %}
+
+{% block extrajs %}
+    {{ block.super }}
+    <script>
+        CUrls["admin_dashboard:soft-deleted-item-list-api"] = "{%  url 'admin_dashboard:soft-deleted-item-list-api' %}"
+        $(document).ready(function () {
+            console.log(CUrls);
+            fetchRequest({
+                url: CUrls['admin_dashboard:soft-deleted-item-list-api'],
+                success: function (response) {
+                    console.log(response);
+                }
+            })
+        });
+    </script>
+{% endblock %}

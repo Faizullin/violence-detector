@@ -1,0 +1,27 @@
+[
+    {
+        "name": "Universal CityWalk",
+        "description": "Universal CityWalk",
+        "price": 745,
+        "image": "img/tour-1.png"
+    },
+    {
+        "name": "Golden Gate Bridge",
+        "description": "Golden Gate Bridge",
+        "price": 740.0,
+        "image": "img/tour-2.png"
+    },
+    {
+        "name": "Grand Canyon",
+        "description": "Grand Canyon",
+        "price": 750.0,
+        "image": "img/tour-3.png"
+    },
+    {
+      "name": "Beverly Hills",
+      "description": "Beverly Hills",
+      "price": 799,
+      "image": "img/tour-0.png"
+    }
+  ]
+  

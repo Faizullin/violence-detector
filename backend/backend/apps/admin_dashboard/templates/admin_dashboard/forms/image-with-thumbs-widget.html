@@ -1,0 +1,129 @@
+{#<div class="image-with-thumbs-widget-container">#}
+{#    <label for="{{ widget.attrs.id }}">{{ widget.attrs.label }}</label>#}
+{#    <input type="{{ widget.type }}" name="{{ widget.name }}"#}
+{#           value="{{ widget.value }}" {% include "django/forms/widgets/attrs.html" %}>#}
+{#</div>#}
+<div class="image-with-thumbs-widget-container"
+     data-type="{{ widget.type }}"
+     data-name="{{ widget.name }}"
+     data-value="{{ obj.value_json }}"
+     data-app_name="{{ obj.app_name }}"
+     data-model_name="{{ obj.model_name }}"
+     data-object_id="{{ obj.object_id }}"
+     data-field_name="{{ obj.field_name }}"
+     data-field_type="{{ obj.field_type }}"
+     data-field_method="{{ obj.field_method }}"
+     data-available_sizes="{{ available_sizes }}"
+>
+    <form class="form" action="#" method="post">
+        {#        <div id="actions" class="row">#}
+        {#            <div class="col-lg-10">#}
+        {#                <div class="btn-group w-100">#}
+        {#                <span class="btn btn-success col fileinput-button dz-add-button">#}
+        {#                    <i class="fas fa-plus"></i>#}
+        {#                    <span>Add files</span>#}
+        {#                </span>#}
+        {#                    <button type="submit" class="btn btn-primary col start">#}
+        {#                        <i class="fas fa-upload"></i>#}
+        {#                        <span>Start upload</span>#}
+        {#                    </button>#}
+        {#                    <button type="reset" class="btn btn-warning col cancel">#}
+        {#                        <i class="fas fa-times-circle"></i>#}
+        {#                        <span>Cancel upload</span>#}
+        {#                    </button>#}
+        {#                </div>#}
+        {#            </div>#}
+        {#            <div class="col-lg-2 d-flex align-items-center">#}
+        {#                <div class="fileupload-process w-100">#}
+        {#                    <div id="total-progress" class="progress progress-striped active" role="progressbar"#}
+        {#                         aria-valuemin="0"#}
+        {#                         aria-valuemax="100" aria-valuenow="0">#}
+        {#                        <div class="progress-bar progress-bar-success" style="width:0;" data-dz-uploadprogress=""></div>#}
+        {#                    </div>#}
+        {#                </div>#}
+        {#            </div>#}
+        {#        </div>#}
+        {#        <div class="table table-striped files" id="previews">#}
+        {#        </div>#}
+
+        <div class="form-group">
+            <!--begin::Col-->
+            <div class="col-lg-10">
+                <!--begin::Dropzone-->
+                <div class="dropzone dropzone-queue mb-2" id="dropzone-{{ obj.field_name }}">
+                    <!--begin::Controls-->
+                    <div class="dropzone-panel mb-lg-0 mb-2 row">
+                        <a class="dropzone-select btn btn-sm btn-primary me-2">Attach files</a>
+                        <a class="dropzone-upload btn btn-sm btn-light-primary me-2">Upload All</a>
+                        <a class="dropzone-remove-all btn btn-sm btn-light-primary">Remove All</a>
+
+                        <select class="image-size-select">
+                            {% for item in available_sizes %}
+                                <option value="{{ item }}">{{ item }}</option>
+                            {% endfor %}
+                        </select>
+
+                    </div>
+                    <!--end::Controls-->
+
+                    <div class="dropzone-item-current-value">
+                        <!--begin::File-->
+                        <div class="dropzone-file">
+                            <div class="dropzone-filename" title="{{ obj.value.name }}">
+                                <a href="{{ obj.value.url }}">{{ obj.value.name }}</a>
+                                <strong>(<span data-dz-size>{{ obj.value.size }}kb</span>)</strong>
+                            </div>
+                            <button class="dropzone-delete btn btn-danger btn-sm" >Remove</button>
+                        </div>
+                        <!--end::File-->
+                    </div>
+
+                    <!--begin::Items-->
+                    <div class="dropzone-items wm-200px">
+                        <div class="dropzone-item dropzone-item-template" style="display:none">
+                            <!--begin::File-->
+                            <div class="dropzone-file">
+                                <div class="dropzone-filename" title="some_image_file_name.jpg">
+                                    <span data-dz-name>some_image_file_name.jpg</span>
+                                    <strong>(<span data-dz-size>340kb</span>)</strong>
+                                </div>
+
+                                <div class="dropzone-error" data-dz-errormessage></div>
+                            </div>
+                            <!--end::File-->
+
+                            <!--begin::Progress-->
+                            <div class="dropzone-progress">
+                                <div class="progress">
+                                    <div
+                                            class="progress-bar bg-primary"
+                                            role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
+                                            data-dz-uploadprogress>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--end::Progress-->
+
+                            <!--begin::Toolbar-->
+                            <div class="dropzone-toolbar">
+                                <span class="dropzone-start"><i class="bi bi-play-fill fs-3"></i></span>
+                                <span class="dropzone-cancel" data-dz-remove style="display: none;"><i
+                                        class="bi bi-x fs-3"></i></span>
+                                <span class="dropzone-delete" data-dz-remove><i class="bi bi-x fs-1"></i></span>
+                            </div>
+                            <!--end::Toolbar-->
+                        </div>
+                    </div>
+                    <!--end::Items-->
+                </div>
+                <!--end::Dropzone-->
+
+                <!--begin::Hint-->
+                <span class="form-text text-muted">Max file size is 1MB and max number of files is 5.</span>
+                <!--end::Hint-->
+            </div>
+            <!--end::Col-->
+        </div>
+        <!--end::Input group-->
+    </form>
+</div>
