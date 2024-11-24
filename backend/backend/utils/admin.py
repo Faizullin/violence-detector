@@ -257,8 +257,9 @@ class BaseAdmin(admin.ModelAdmin):
         fieldsets_dict = self.get_fieldsets_dict(request, obj)
         fieldsets = []
         for key in self.lookup_key_list:
-            item = fieldsets_dict[key]
-            fieldsets.append((item['label'], item['value']))
+            item = fieldsets_dict.get(key, None)
+            if item is not None:
+                fieldsets.append((item['label'], item['value']))
         return fieldsets
 
     def get_fieldsets_dict(self, request, obj=None):

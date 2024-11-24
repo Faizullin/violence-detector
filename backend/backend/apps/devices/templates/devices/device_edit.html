@@ -1,0 +1,18 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Edit Device{% endblock %}
+
+{% block content %}
+    {% include 'components/header.html' %}
+
+    <main class="container my-4">
+        <h2>Edit Device</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Update Device</button>
+        </form>
+    </main>
+
+    {% include 'components/footer.html' %}
+{% endblock %}

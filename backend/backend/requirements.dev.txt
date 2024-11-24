@@ -1,6 +1,6 @@
 anyio
-Django~=4.2.13
-# celery~=5.4.0
+Django
+# celery
 # django-celery-beat
 # django-celery-results
 django-cors-headers
@@ -13,10 +13,10 @@ django-redis
 django-rest-passwordreset
 django-rest-polymorphic
 django-timezone-field
-djangorestframework~=3.15.2
+djangorestframework
 dj-rest-auth 
 djangorestframework-simplejwt
-django-allauth~=0.63.3
+django-allauth
 drf-nested-routers
 drf-standardized-errors
 oauthlib
@@ -36,11 +36,11 @@ six
 gunicorn
 stripe~=10.0.0
 django-parler
-django-parler-rest~=2.2
-django-debug-toolbar~=4.4.2
+django-parler-rest
+django-debug-toolbar
 django-gmailapi-backend
 django_grapesjs
-django-notifications-hq~=1.8.3
+django-notifications-hq
 django-jazzmin
 django-environ
 jsonfield
@@ -66,3 +66,4 @@ clip-by-openai
 # torch==1.7.1
 whatimage==0.0.3
 pyaml
+djangorestframework-api-key

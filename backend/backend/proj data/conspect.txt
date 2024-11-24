@@ -1,0 +1,50 @@
+Project divided 2 parts:
+Client code:
+Single python file responsible for processing image from camera and on any trigger  (violence or other), send to server.
+Server has more advamced model and assumed to show better result, on any raise save predictions and add to specific news.
+Tools:
+    programming labguage: Python 3.12
+    libraries: OpenCV (for recording), Numpy, requests (for sevever sync), clip-by-openai (for AI detection)
+Detection logic:
+clip-by-openai is a model developed by OpenAI that combines vision and language understanding by encoding images and text into a shared embedding space. 
+It processes images through a CNN and text through a transformer-based network, generating vector representations for both. 
+By comparing these embeddings using cosine similarity, the model can make predictions about image content, enabling tasks like image classification, object detection, and zero-shot learning.
+
+
+Server code:
+Server code is responsible for receiving images from client, processing them and saving predictions.
+Server should register device, and user should assign api key for connection permission. 
+Server use combined models:
+    - clip-by-openai: basic model for image classification
+    - tensorflow with prepared model: specifc model with weightds are trained only for violence detection, and used to double check.
+Tools:
+    programming labguage: Python 3.8
+    libraries: Django(server), OpenCV (image processing), Numpy, clip-by-openai (for first-step detection), tensorflow (for second-step detection)
+
+
+
+
+----
+
+
+Проект разделен на 2 части:
+Клиентский код:
+Один файл на Python, отвечающий за обработку изображения с камеры и отправку на сервер при любом триггере (насилие или другое).
+Сервер имеет более продвинутую модель и предполагается, что он покажет лучший результат, при любом срабатывании сохраняет предсказания и добавляет их к конкретным новостям.
+Инструменты:
+    язык программирования: Python 3.12
+    библиотеки: OpenCV (для записи), Numpy, requests (для синхронизации с сервером), clip-by-openai (для AI-обнаружения)
+Логика обнаружения:
+clip-by-openai — это модель, разработанная OpenAI, которая объединяет понимание зрения и языка, кодируя изображения и текст в общее пространство встраивания.
+Она обрабатывает изображения через CNN и текст через сеть на основе трансформеров, создавая векторные представления для обоих.
+Сравнивая эти встраивания с использованием косинусного сходства, модель может делать предсказания о содержимом изображения, что позволяет выполнять задачи, такие как классификация изображений, обнаружение объектов и обучение без примеров.
+
+Серверный код:
+Серверный код отвечает за прием изображений от клиента, их обработку и сохранение предсказаний.
+Сервер должен зарегистрировать устройство, и пользователь должен назначить API-ключ для разрешения подключения.
+Сервер использует комбинированные модели:
+    - clip-by-openai: базовая модель для классификации изображений
+    - tensorflow с подготовленной моделью: специфическая модель с весами, обученными только для обнаружения насилия, и используется для двойной проверки.
+Инструменты:
+    язык программирования: Python 3.8
+    библиотеки: Django (сервер), OpenCV (обработка изображений), Numpy, clip-by-openai (для первичного обнаружения), tensorflow (для вторичного обнаружения)

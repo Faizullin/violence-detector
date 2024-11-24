@@ -1,0 +1,163 @@
+{% extends 'layouts/base.html' %}
+
+{% load static %}
+
+{% block title %}Басты{% endblock %}
+
+
+{% block content %}
+    {% include 'components/header.html' %}
+
+    <main>
+        <!----- ############# Slider ################ ----->
+        <div class="slider-container">
+            <div class="slider no-margin container-fluid">
+                <div class="layye">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-8 detail">
+                                <h2>"Сіздің қауіпсіздігіңіз, біздің басымдығымыз."<br> Нейрондық желілердің күшімен</h2>
+                                <p>Нақты уақыттағы зорлық-зомбылықты анықтау және белсенді қорғау қызметтері.</p>
+                                <button class="btn btn-primary"
+                                        onclick="window.location.href='{% url 'devices:device-list-my' %}';">Бастау
+                                </button>
+                            </div>
+                            <div class="col-md-4 d-none d-md-block image">
+                                <img src="{% static 'images/camera.png' %}" alt="">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!----- ############# Why Us ################ ----->
+
+        <div class="container-fluid key-features">
+            <div class="container">
+                <div class="row key-row">
+                    <div class="col-md-4">
+                        <div class="sec-det">
+                            <i class="fas fa-shield-alt"></i>
+                            <h4>AI негізіндегі зорлық-зомбылықты анықтау</h4>
+                            <p>Жетілдірілген алгоритмдер нақты уақыт режимінде зорлық-зомбылық белгілерін бақылайды және
+                                анықтайды.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="sec-det">
+                            <i class="fas fa-exclamation"></i>
+                            <h4>Белсенді ескертулер және әрекет</h4>
+                            <p>Билік органдарына және белгіленген байланыстарға жедел ескертулер жіберіледі.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="sec-det">
+                            <i class="fas fa-video"></i>
+                            <h4>24/7 бақылау және қолдау</h4>
+                            <p>Сіздің тыныштығыңыз үшін тәулік бойы бақылау.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!----- ############# About Us ################ ----->
+
+
+        <div id="about" class="container-fluid about-us">
+            <div class="container">
+                <div class="row about-row">
+                    <div class="col-md-12 details">
+                        <h2>Біз туралы</h2>
+
+                        <p>
+                            Біз технологияны пайдаланып, қауымдастықтарды қауіпсіз етуге және ақылды шешімдер жасауға
+                            құмармыз. AI және жетілдірілген бейнелеу технологиясының күшін пайдалану көзқарасынан
+                            туындаған біздің сапарымыз қарапайым,
+                            бірақ қуатты идеядан басталды: интеллектуалды камера интеграциясы арқылы нақты уақыттағы
+                            сенімді зорлық-зомбылықты анықтауды қамтамасыз ету.
+
+                            Біздің заманауи платформамыз камераларды нақты уақыт режимінде суреттерді өңдеуге және
+                            зорлық-зомбылық әрекеттерін анықтауға арналған AI қызметтерінің жиынтығына үздіксіз қосады.
+                            Жетілдірілген сурет тану, терең оқыту алгоритмдері және үздіксіз инновацияларды біріктіру
+                            арқылы біз бизнеске, ұйымдарға және қауымдастықтарға қауіпсіздікті арттыру және қауіптерге
+                            белсенді жауап беру құралдарын беруді мақсат етеміз.
+
+                            Біздің миссиямыздың жүрегінде технологияның хабардарлық пен әрекет арасындағы алшақтықты
+                            жоюға деген ұмтылысы жатыр.
+                            Біз өңделген әрбір сурет бізді зиянның алдын алуға және барлығына қауіпсіз орта құруға бір
+                            қадам жақындатады деп тырысамыз.
+
+                            Көру және интеллект күші арқылы әлемді қауіпсіз ету сапарымызға қосылыңыз.
+
+                        </p>
+                        <a href="{% url 'violence_detection:test_predict' %}">Demo</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ################# Lates Blog Starts Here #######################--->
+
+        <div class="our-blog container-fluid">
+            <div class="container">
+                <div class="session-title row">
+                    <h2>Біздің блогтар</h2>
+                    <p></p>
+                </div>
+                <div class="blog-row row">
+                    <div class="col-md-4 blogcol">
+                        <div class="blogdiv">
+                            <img src="./d1.jpg" alt="">
+                            <div class="blog-detail">
+                                <h4>clip-ті түсіну</h4>
+                                <span>12 тамыз 2024</span>
+                                <p>
+                                    clip-by-openai қалай көру және тіл түсінуді біріктіріп, әртүрлі тапсырмаларды
+                                    орындайтынын терең қарастыру.
+                                </p>
+                                <ul class="blog-info">
+                                    <li><i class="far fa-eye"></i> 400</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 blogcol">
+                        <div class="blogdiv">
+                            <img src="./d2.jpg" alt="">
+                            <div class="blog-detail">
+                                <h4>Микросервистердің қолданылуы</h4>
+                                <span>1 қазан 2024</span>
+                                <p>Кескінді жіктеуде, нысанды анықтауда және нөлдік түсірілімде оқытуда модельдердің әртүрлі қолданбаларын зерттеу</p>
+                                <ul class="blog-info">
+                                    <li><i class="far fa-eye"></i> 400</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 blogcol">
+                        <div class="blogdiv">
+                            <img src="./d3.jpg" alt="">
+                            <div class="blog-detail">
+                                <h4>Жеке құрылғыны орнату</h4>
+                                <span>19 қараша 2024</span>
+
+                                <p>Қалай орнату және құрылғысын қосу үшін нұсқаулық</p>
+                                <ul class="blog-info">
+                                    <li><i class="far fa-eye"></i> 400</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    {% include 'components/footer.html' %}
+
+{% endblock %}
+

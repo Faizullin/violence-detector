@@ -1,0 +1,29 @@
+{% extends 'layouts/base.html' %}
+{% block title %}Тіркеу{% endblock %}
+
+{% block content %}
+{% include 'components/header.html' %}
+<main class="py-5">
+<div class="text-center mt-4 text-muted">
+    <h2>Тіркеу</h2>
+</div>
+<div class="col-md-6 offset-md-3">
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Жабу">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% endfor %}
+    {% endif %}
+    <form action="{% url 'accounts:register' %}" method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Тіркелу</button>
+    </form>
+</div>
+</main>
+{% include 'components/footer.html' %}
+{% endblock %}

@@ -1,0 +1,5 @@
+add djangorestframework-api-key to requiremnts.txt (last)
+prepare production (last)
+add djangorestframework-api-key logic [done]
+test client backned [done]
+preparew design: add add device list, udpate news_list

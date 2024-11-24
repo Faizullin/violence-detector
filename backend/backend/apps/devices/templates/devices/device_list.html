@@ -1,0 +1,41 @@
+{% extends 'layouts/base.html' %}
+
+{% load static %}
+
+{% block title %}My Devices{% endblock %}
+
+{% block content %}
+    {% include 'components/header.html' %}
+
+    <main>
+        <div style="height: 120px"></div>
+    
+        <!----- ############# Device Cards ################ ----->>
+        <div class="container-fluid key-features">
+            <div class="container">
+                <h2 class="text-center my-4">Your Devices</h2>
+                <div class="row key-row">
+                    {% for device in devices %}
+                        <div class="col-md-4">
+                            <div class="device-card">
+                                <div class="card-icon">
+                                    <i class="fas fa-tablet-alt"></i>
+                                </div>
+                                <h4>{{ device.name }}</h4>
+                                <p><strong>Status:</strong> {{ device.status }}</p>
+                                <p><strong>Last Active:</strong> {{ device.last_active }}</p>
+                                <a class="btn btn-primary" href="{%  url 'devices:device-update' pk=device.id %}">Edit</a>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="col-12 text-center">
+                            <p>No devices found. <a href="#" class="btn btn-primary">Add Device</a></p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </main>
+
+    {% include 'components/footer.html' %}
+{% endblock %}

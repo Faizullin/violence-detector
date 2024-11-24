@@ -1,10 +1,12 @@
+from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 from utils.admin import BaseAdmin, admin
-from .models import CustomUser as User
+
+UserModel = get_user_model()
 
 
-@admin.register(User)
+@admin.register(UserModel)
 class UserAdmin(BaseUserAdmin, BaseAdmin):
     def get_fieldsets_dict(self, request, obj=None):
         default_fieldsets_dict = super().get_fieldsets_dict(request, obj)

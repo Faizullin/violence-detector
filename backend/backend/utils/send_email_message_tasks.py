@@ -1,10 +1,10 @@
-from celery import shared_task
-from celery.utils.log import get_task_logger
+# from celery import shared_task
+# from celery.utils.log import get_task_logger
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 
-logger = get_task_logger(__name__)
+# logger = get_task_logger(__name__)
 
 
 class SiteUrls:
@@ -17,10 +17,11 @@ class SiteUrls:
 
 
 def send_email_message(context: dict, user_emails: list):
-    send_email_message_task.delay(context, user_emails)
+    # send_email_message_task.delay(context, user_emails)
+    send_email_message_task(context, user_emails)
 
 
-@shared_task
+# @shared_task
 def send_email_message_task(context: dict, user_emails: list):
     logger.info(f"Email: context {context}")
     try:

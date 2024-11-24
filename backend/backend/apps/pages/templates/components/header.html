@@ -1,0 +1,60 @@
+{% load static %}
+
+<header class="container-fluid">
+    <div id="menu-jk" class="header-bottom" style="z-index: 1000;">
+        <div class="container">
+            <div class="row">
+                <div class="logo col-md-3">
+                    {#                    <img src="{% static 'images/logo.png' %}" alt="">#}
+                    <h3 class="h5 mt-1">VD</h3>
+                    <a data-toggle="collapse" data-target="#menu"
+                       href="https://www.yudaah.com/demo/webcam-website-template-for-free/#menu"><i
+                            class="fas d-block d-md-none small-menu fa-bars"></i></a>
+                </div>
+                <div id="menu" class="navs d-none d-md-block col-md-9">
+                    <ul>
+                        <li>
+                            <a href="{% url 'pages:home' %}">Басты</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'pages:home' %}#about">
+                                Біз туралы
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'violence_detection:test_predict' %}">
+                                Тест болжау
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'violence_detection:prediction_news_list' %}">
+                                Болжау жаңалықтары
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                Блог
+                            </a>
+                        </li>
+                        {% if user.is_authenticated %}
+                        <li>
+                            <a href="{% url 'accounts:edit_profile' %}">
+                                {{ user.username }}
+                            </a>
+                        </li>
+                        {% else %}
+                        <li>
+                            <a href="{% url 'accounts:login' %}">
+                                Кіру
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div></div>
+    <div></div>
+</header>
+

@@ -1,79 +1,98 @@
-from dj_rest_auth.forms import AllAuthPasswordResetForm as _BaseAllAuthPasswordResetForm, default_url_generator
+from django import forms
+from django.contrib.auth import get_user_model
+from django.contrib.auth.forms import (AuthenticationForm, PasswordChangeForm,
+                                       PasswordResetForm, UserChangeForm,
+                                       UserCreationForm)
 
-from django.conf import settings
-from django.contrib.auth.forms import PasswordResetForm as _BasePasswordResetForm
-from django.contrib.sites.shortcuts import get_current_site
+UserModel = get_user_model()
 
-if 'allauth' in settings.INSTALLED_APPS:
-    from allauth.account import app_settings as allauth_account_settings
-    from allauth.account.adapter import get_adapter
-    from allauth.account.forms import default_token_generator
-    from allauth.account.utils import (
-        user_pk_to_url_str,
-        user_username,
+
+class SignInForm(AuthenticationForm):
+    username = forms.CharField(
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'placeholder': 'Пайдаланушы аты'}),
+        label="Пайдаланушы аты"
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput(
+            attrs={'class': 'form-control', 'placeholder': 'Құпия сөз'}),
+        label="Құпия сөз"
     )
 
-from utils.send_email_message_tasks import send_email_message
+
+class SignUpForm(UserCreationForm):
+    email = forms.EmailField(
+        required=True,
+        widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Электрондық пошта'}),
+        label="Электрондық пошта"
+    )
+    password1 = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Құпия сөз'}),
+        label="Құпия сөз"
+    )
+    password2 = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Құпия сөзді растау'}),
+        label="Құпия сөзді растау"
+    )
+    first_name = forms.HiddenInput()
+    last_name = forms.HiddenInput()
+    
+
+    class Meta:
+        model = UserModel
+        fields = ['username', 'email', 'password1', 'password2']
+        widgets = {
+            'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Пайдаланушы аты'}),
+        }
 
 
-class AllAuthPasswordResetForm(_BaseAllAuthPasswordResetForm):
-    def save(self, request, **kwargs):
-        current_site = get_current_site(request)
-        email = self.cleaned_data['email']
-        token_generator = kwargs.get('token_generator', default_token_generator)
+class EditProfileForm(UserChangeForm):
+    # username = forms.CharField(label="Username:",
+    #                            max_length=32, help_text="<small id='emailHelp' class='form-text text-muted'>Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.</small>", widget=forms.TextInput(attrs={'class': 'form-control'}))
+    # first_name = forms.CharField(label="First Name:",
+    #                              max_length=32, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    # last_name = forms.CharField(label="Last Name:",
+    #                             max_length=32, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    # email = forms.EmailField(label="Email",
+    #                          max_length=50, widget=forms.EmailInput(attrs={'class': 'form-control'}))
+    # password = forms.CharField(label="",
+    # #                            max_length=50, widget=forms.PasswordInput(attrs={'type': 'hidden'}))
 
-        for user in self.users:
+    # class Meta:
+    #     model = UserModel
+    #     fields = ['username', 'first_name', 'last_name',  'email']
+    #     widgets = {
+    #         'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Пайдаланушы аты'}),
+    #         'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Атыңыз'}),
+    #         'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Тегіңіз'}),
+    #         'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Электрондық пошта'}),
+    #     }
+    password = None  # Exclude the password field from the form
 
-            temp_key = token_generator.make_token(user)
-
-            # save it to the password reset model
-            # password_reset = PasswordReset(user=user, temp_key=temp_key)
-            # password_reset.save()
-
-            # send the password reset email
-            url_generator = kwargs.get('url_generator', default_url_generator)
-            url = url_generator(request, user, temp_key)
-            uid = user_pk_to_url_str(user)
-
-            context = {
-                'current_site': current_site,
-                'user': user,
-                'password_reset_url': url,
-                'request': request,
-                'token': temp_key,
-                'uid': uid,
-            }
-            if (
-                    allauth_account_settings.AUTHENTICATION_METHOD != allauth_account_settings.AuthenticationMethod.EMAIL
-            ):
-                context['username'] = user_username(user)
-            get_adapter(request).send_mail(
-                'account/email/password_reset_key', email, context
-            )
-        return self.cleaned_data['email']
+    class Meta:
+        model = UserModel
+        fields = ['username', 'email', 'first_name', 'last_name']
+        labels = {
+            'username': 'Пайдаланушы аты',
+            'email': 'Электрондық пошта',
+            'first_name': 'Атыңыз',
+            'last_name': 'Тегіңіз',
+        }
+        widgets = {
+            'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Пайдаланушы аты'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Электрондық пошта'}),
+            'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Атыңыз'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Тегіңіз'}),
+        }
 
 
-class PasswordResetForm(_BasePasswordResetForm):
-    def send_mail(
-            self,
-            subject_template_name,
-            email_template_name,
-            context,
-            from_email,
-            to_email,
-            html_email_template_name=None,
-    ):
-        """
-        Send a django.core.mail.EmailMultiAlternatives to `to_email`.
-        """
-        subject = loader.render_to_string(subject_template_name, context)
-        # Email subject *must not* contain newlines
-        subject = "".join(subject.splitlines())
-        body = loader.render_to_string(email_template_name, context)
+class ChangePasswordForm(PasswordChangeForm):
+    old_password = forms.CharField(label="Old password:",
+                                   max_length=32, widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+    new_password1 = forms.CharField(label="New password:", help_text="<small><ul class='form-text text-muted'><li>Your password can\'t be too similar to your other personal information.</li><li>Your password must contain at least 8 characters.</li><li>Your password can\'t be a commonly used password.</li><li>Your password can\'t be entirely numeric.</li></ul></small>",
+                                    max_length=32, widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+    new_password2 = forms.CharField(label="New password confirmation:",
+                                    max_length=32, widget=forms.PasswordInput(attrs={'class': 'form-control'}))
 
-        email_message = EmailMultiAlternatives(subject, body, from_email, [to_email])
-        if html_email_template_name is not None:
-            html_email = loader.render_to_string(html_email_template_name, context)
-            email_message.attach_alternative(html_email, "text/html")
-
-        email_message.send()
+    class Meta:
+        model = UserModel
