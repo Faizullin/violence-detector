@@ -1,0 +1,30 @@
+# base image
+FROM python:3.8.12
+# LABEL org.opencontainers.image.source=https://github.com/serengil/deepface
+
+# -----------------------------------
+# create required folder
+ENV HOME=/app
+RUN mkdir $HOME
+
+# -----------------------------------
+# switch to application directory
+WORKDIR $HOME
+
+# -----------------------------------
+# update image os
+RUN apt-get update
+RUN apt-get install ffmpeg libsm6 libxext6 -y
+
+# -----------------------------------
+# Copy required files from repo into image
+COPY . $HOME
+
+
+
+# RUN pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org torch==1.7.1
+RUN pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org -r requirements.txt
+
+# -----------------------------------
+# environment variables
+ENV PYTHONUNBUFFERED=1
