@@ -1,16 +1,20 @@
 import os
+import queue
 import sys
 import threading
 import time
+
 import cv2
 import requests
-import queue
 from dotenv import load_dotenv
+
 from model import Model
 
 # Load environment variables from .env file
 load_dotenv()
 API_URL = os.getenv("API_URL")
+API_KEY = os.getenv("API_KEY")
+API_DEVICE_ID = os.getenv("API_DEVICE_ID")
 
 
 class ApiRequester(threading.Thread):
@@ -32,15 +36,25 @@ class ApiRequester(threading.Thread):
         if self.can_send_request():
             # Prepare data to be sent
             _, img_encoded = cv2.imencode('.jpg', image)
-            data = {"message": message}
-            files = {"image": img_encoded.tobytes()}
+            data = {
+                "message": message,
+                "device_id": API_DEVICE_ID,
+            }
+            files = {
+                "image": ("image.jpg", img_encoded.tobytes(), "image/jpeg"),
+            }
+            headers = {
+                "Authorization": f"Api-key {API_KEY}"
+            }
 
             try:
-                response = requests.post(self.api_url, data=data, files=files)
+                response = requests.post(
+                    self.api_url, data=data, files=files,  headers=headers)
                 if response.status_code == 200:
                     print("\nAPI Request Successful")
                 else:
-                    print("\nAPI Request Failed")
+                    print("\nAPI Request Failed {} {}".format(
+                        response.status_code, response.text))
                 self.last_request_time = time.time()
             except requests.RequestException as e:
                 print(f"\nAPI Request Error: {e}")
@@ -49,7 +63,8 @@ class ApiRequester(threading.Thread):
         """Continuously monitor the queue and send API requests."""
         while True:
             try:
-                message, image = self.queue.get(timeout=1)  # Get item from queue
+                message, image = self.queue.get(
+                    timeout=1)  # Get item from queue
                 self.send_request(message, image)
             except queue.Empty:
                 continue  # No items to process, continue the loop
@@ -68,7 +83,8 @@ class DetectionApp:
         self.detection_result = "Detection: Off"
 
         # Start the detection thread
-        self.detection_thread = threading.Thread(target=self._detection_thread, daemon=True)
+        self.detection_thread = threading.Thread(
+            target=self._detection_thread, daemon=True)
         self.detection_thread.start()
 
     def toggle_detection(self):
@@ -79,9 +95,16 @@ class DetectionApp:
     def _run_detection(self, frame):
         """Run the model prediction and handle detection result."""
         result = self.model.predict(frame)
-        
+        prediction1_keywords = ["violence", "fire", "fight", "crash"]
+
+        tt = False
+        for i in prediction1_keywords:
+            if i in result["label"]:
+                tt = True
+                break
+
         # Check if result indicates a detection
-        if result:
+        if tt and result["confidence"] > 0.2:
             self.consecutive_detections += 1
         else:
             self.consecutive_detections = 0
