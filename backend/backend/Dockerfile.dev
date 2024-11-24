@@ -11,6 +11,9 @@ RUN mkdir $HOME/public
 RUN mkdir $HOME/public/static
 RUN mkdir $HOME/public/media
 RUN mkdir $HOME/api-weights
+RUN mkdir $HOME/logs
+RUN mkdir $HOME/logs/api
+RUN mkdir $HOME/logs/celery
 
 # install system dependencies
 RUN apt-get update && \

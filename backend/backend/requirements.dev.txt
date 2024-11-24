@@ -34,7 +34,6 @@ regex
 requests
 six
 gunicorn
-stripe~=10.0.0
 django-parler
 django-parler-rest
 django-debug-toolbar

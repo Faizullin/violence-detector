@@ -9,7 +9,7 @@ services:
       - .env
   backend:
     build:
-      context: ./
+      context: ./backend
       dockerfile: Dockerfile.dev
     command: python3 manage.py runserver 0.0.0.0:8000 --settings=backend.settings.local
     volumes:
