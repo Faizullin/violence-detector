@@ -51,12 +51,7 @@ def main():
             f"docker exec -it {container_name} python3 manage.py migrate --settings=backend.settings.{settings_extension}")
 
     elif action == "seed":
-        if len(additional_args) < 1:
-            print("Error: Seed file is required for the seed action.")
-            print("Usage: helper.py [dev|prod] seed [seed_file]")
-            sys.exit(1)
-        seed_file = additional_args[0]
-        print(f"Seeding database with {seed_file} for {env} environment...")
+        print(f"Seeding database for {env} environment...")
         run_command(
             f"docker exec -it {container_name} python3 manage.py shell -c \"from seeding.seed import *;seed(False)\" --settings=backend.settings.{settings_extension}")
 
