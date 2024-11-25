@@ -7,13 +7,8 @@ done
 
 echo "PostgreSQL started"
 
-# echo "Running migrations..."
-# python3 manage.py makemigrations --settings=backend.settings.local
-# # python3 manage.py collectstatic --no-input --clear --settings=backend.settings.local
-# echo "Migrations complete"
-
-# echo "Running migrate..."
-# python3 manage.py migrate --settings=backend.settings.local
-# echo "Migrate complete"
+echo "Running migrations..."
+python3 manage.py makemigrations --settings=backend.settings.local
+echo "Migrations complete"
 
 exec "$@"
