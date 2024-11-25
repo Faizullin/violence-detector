@@ -8,3 +8,5 @@ class Blog(AbstractTimestampedModel):
     description = models.TextField()
     content = models.TextField()
     author = models.ForeignKey(UserModel, on_delete=models.SET_NULL, null=True, blank=True)
+    is_featured = models.BooleanField(default=False)
+

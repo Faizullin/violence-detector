@@ -7,14 +7,14 @@
 {% block content %}
     {% include 'components/header.html' %}
 
-    <main class="py-5 bg-light">
+    <main class="py-5 bg-light flex-column flex-grow-1">
         <div class="container">
             <!-- Blog Header -->
             <div class="row mb-4">
                 <div class="col-md-12 text-center">
                     <img src="{{ blog.thumbnail.url }}" alt="{{ blog.title }}" class="img-fluid rounded shadow-sm mb-3" style="max-height: 400px;">
                     <h1 class="text-primary font-weight-bold">{{ blog.title }}</h1>
-                    <p class="text-muted">Қосылған күні: {{ blog.date_added|date:"d M Y" }}</p>
+                    <p class="text-muted">Дата: {{ blog.date_added|date:"d M Y" }}</p>
                 </div>
             </div>
 

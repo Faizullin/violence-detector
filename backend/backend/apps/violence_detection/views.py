@@ -1,25 +1,51 @@
+from apps.devices.models import Device
+from apps.file_system.models import File
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
+from django.utils import timezone
 from django.views.generic import ListView
-from rest_framework import status, permissions
+from rest_framework import permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_api_key.permissions import HasAPIKey
 
-from .models import Prediction, PredictionAttempt, News
-from ..file_system.models import File
+from .models import News, Prediction, PredictionAttempt
 
-use_detection = False 
+use_detection = settings.USE_VIOLENCE_DETECTION
 if use_detection:
-    from .serializers import PredictionRequestSerializer, PredictionRequestBaseSerializer
+    from .serializers import (PredictionRequestBaseSerializer,
+                              PredictionRequestSerializer)
     from .violence_detection.utils.image import imdecode
-    from .violence_detection.violence_alarm_detection.detector import ViolenceAlarmDetector
-    from .violence_detection.violence_basic_detection.detector import ViolenceBasicDetector
+    from .violence_detection.violence_alarm_detection.detector import \
+        ViolenceAlarmDetector
+    from .violence_detection.violence_basic_detection.detector import \
+        ViolenceBasicDetector
 
     basic_detector = ViolenceBasicDetector()
     basic_detector.load_model_and_prepare()
     alarm_detector = ViolenceAlarmDetector()
     alarm_detector.load_model_and_prepare()
+
+
+def generate_news_for_prediction_attempt(obj: PredictionAttempt):
+    news_obj = News.objects.create(
+        author=obj.device.user,
+        prediction_attempt=obj,
+        title="",
+    )
+    news_obj.title = "Инцидент " + str(news_obj.id)
+    
+    preds = news_obj.prediction_attempt.prediction_set.all()
+    if len(preds) != 2:
+        raise ValueError("Incorrect number of predictions in database.")
+    news_obj.description = f'''
+    Предсказания:
+    {str(preds[0].type)}: {str(preds[0].confidence)}
+    {str(preds[1].type)}: {str(preds[1].confidence)}
+    '''
+    news_obj.save()
+    return news_obj
 
 
 class PredictApiView(APIView):
@@ -28,7 +54,9 @@ class PredictApiView(APIView):
     def post(self, request):
         serializer = PredictionRequestSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        device = serializer.validated_data.get("device_id")
+        device: Device = serializer.validated_data.get("device_id")
+        device.last_active = timezone.now()
+        device.save()
         image_file = serializer.validated_data.get("image")
         image_buf = image_file.read()
         if not len(image_buf):
@@ -47,7 +75,6 @@ class PredictApiView(APIView):
         is_to_save = self.is_to_save(prediction1, prediction2)
 
         if is_to_save:
-            print("Add case")
             file_obj = File.objects.create(file=image_file)
             file_obj.save()
             prediction_attempt_obj = PredictionAttempt.objects.create(
@@ -75,6 +102,10 @@ class PredictApiView(APIView):
             )
         else:
             prediction_attempt_obj = None
+
+        if prediction_attempt_obj is not None and device.news_create_allowed:
+            generate_news_for_prediction_attempt(prediction_attempt_obj)
+
         return Response({'data': {
             "saved": is_to_save,
             "prediction_attempt_obj": None if prediction_attempt_obj is None else {
@@ -98,6 +129,8 @@ class PredictApiView(APIView):
 
         prediction2_data = prediction2[0]
         p2_viol = prediction2_data["result"]
+        print(p1_viol, p2_viol)
+        return p1_viol or p2_viol
         if p1_viol and not p2_viol:
             return False
         elif p1_viol and p2_viol:

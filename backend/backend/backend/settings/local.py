@@ -1,5 +1,7 @@
 from .base import *
 
+CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=[])
+
 if DEBUG and DATABASES is None:
     DATABASES = {
         'default': {
@@ -24,7 +26,7 @@ if DEBUG:
         'SHOW_TOOLBAR_CALLBACK': lambda _request: DEBUG
     }
 
-if DEBUG:
-    CORS_ALLOW_ALL_ORIGINS = True
-    CORS_ALLOW_CREDENTIALS = True
-    ALLOWED_HOSTS = ["*"]
+# if DEBUG:
+#     CORS_ALLOW_ALL_ORIGINS = True
+#     CORS_ALLOW_CREDENTIALS = True
+#     ALLOWED_HOSTS = ["*"]

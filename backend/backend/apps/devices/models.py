@@ -11,6 +11,8 @@ class Device(AbstractTimestampedModel):
     name = models.CharField(max_length=255)
     description = models.TextField()
     user = models.ForeignKey(UserModel, on_delete=models.CASCADE)
+    last_active = models.DateTimeField(verbose_name="Последняя активность" , null=True, blank=True)
+    news_create_allowed = models.BooleanField(default=False)
 
 
 class DeviceConnectionAppBuild(AbstractTimestampedModel):

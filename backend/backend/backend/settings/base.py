@@ -261,4 +261,4 @@ SESSION_CACHE_ALIAS = "default"
 # }
 
 
-USE_AI = env.bool('USE_AI', False)
+USE_VIOLENCE_DETECTION = env.bool('USE_VIOLENCE_DETECTION', False)

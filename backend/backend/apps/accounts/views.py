@@ -1,6 +1,5 @@
 from django.contrib import messages
-from django.contrib.auth import (login, logout,
-                                 update_session_auth_hash)
+from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 
@@ -17,10 +16,13 @@ def login_user(request):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            messages.success(request, 'Сіз жүйеге сәтті кірдіңіз!')
-            return redirect('pages:home')
+            messages.success(request, 'Вы успешно вошли в систему!')
+            next_url = request.GET.get('next') or request.POST.get('next')
+            next_url = next_url or "pages:home"
+            print("next_url", next_url)
+            return redirect(next_url)
         else:
-            messages.error(request, 'Қате пайдаланушы аты немесе құпия сөз!')
+            messages.error(request, 'Неверное имя пользователя или пароль!')
     else:
         form = SignInForm()
     return render(request, 'accounts/login.html', {'form': form})
@@ -28,7 +30,7 @@ def login_user(request):
 
 def logout_user(request):
     logout(request)
-    messages.success(request, "Logged out successfully")
+    messages.success(request, "Вы успешно вышли из системы.")
     return redirect('pages:home')
 
 
@@ -38,10 +40,10 @@ def register_user(request):
         if form.is_valid():
             user = form.save()
             messages.success(
-                request, 'Тіркелу сәтті аяқталды! Енді жүйеге кіріңіз.')
+                request, 'Регистрация успешно завершена! Теперь войдите в систему.')
             return redirect('accounts:login')
         else:
-            messages.error(request, 'Тіркеуде қателіктер бар!')
+            messages.error(request, 'Есть ошибки в регистрации!')
     else:
         form = SignUpForm()
     context = {
@@ -56,10 +58,10 @@ def edit_profile(request):
         profile_form = EditProfileForm(request.POST, instance=request.user)
         if profile_form.is_valid():
             profile_form.save()
-            messages.success(request, 'Профиль жаңартылды!')
+            messages.success(request, 'Профиль обновлен!')
             return redirect('accounts:edit_profile')
         else:
-            messages.error(request, 'Жаңартуда қателіктер бар!')
+            messages.error(request, 'Есть ошибки при обновлении!')
     else:
         form = EditProfileForm(instance=request.user)
 
@@ -75,10 +77,10 @@ def change_password(request):
         if form.is_valid():
             user = form.save()
             update_session_auth_hash(request, user)
-            messages.success(request, 'Құпия сөз сәтті жаңартылды!')
+            messages.success(request, 'Пароль успешно обновлен!')
             return redirect('accounts:edit_profile')
         else:
-            messages.error(request, 'Құпия сөзді жаңартуда қателіктер бар!')
+            messages.error(request, 'Есть ошибки при обновлении пароля!')
     else:
         form = ChangePasswordForm(user=request.user)
 

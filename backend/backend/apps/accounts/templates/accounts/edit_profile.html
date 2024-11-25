@@ -1,25 +1,36 @@
 {% extends 'layouts/base.html' %}
-{% block title %}Профильді өзгерту{% endblock %}
+{% block title %}Изменить профиль{% endblock %}
 
 {% block content %}
 {% include 'components/header.html' %}
 <main class="py-5 bg-light">
     <div class="container">
-        <!-- Header -->
+
+        <!-- Navigation Tabs -->
+        <nav class="nav nav-tabs mb-4">
+            <a class="nav-item nav-link {% if request.resolver_match.url_name == 'edit_profile'  %}active{% endif %}" href="{% url 'accounts:edit_profile' %}">
+                Изменить профиль
+            </a>
+            <a class="nav-item nav-link {% if request.resolver_match.url_name == 'device-list-my'  %}active{% endif %}" href="{% url 'devices:device-list-my' %}">
+                Мои устройства
+            </a>
+        </nav>
+
+        <!-- Content Area -->
         <div class="text-center mb-4">
-            <h2 class="text-primary font-weight-bold">Профильді өзгерту</h2>
-            <p class="text-muted">Өзіңіздің жеке мәліметтеріңізді жаңартыңыз немесе құпия сөзді өзгертіңіз</p>
+            <h2 class="text-primary font-weight-bold">Изменить профиль</h2>
+            <p class="text-muted">Обновите свои личные данные или измените пароль</p>
         </div>
 
         <!-- Upper Form: Edit Profile -->
         <div class="col-md-8 offset-md-2 bg-white p-4 rounded shadow-sm mb-4">
-            <h3 class="text-secondary">Негізгі мәліметтерді өзгерту</h3>
+            <h3 class="text-secondary">Изменение основных данных</h3>
             <hr>
             {% if messages %}
             {% for message in messages %}
             <div class="alert alert-warning alert-dismissible fade show" role="alert">
                 {{ message }}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Жабу">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Закрыть">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -28,19 +39,19 @@
             <form action="{% url 'accounts:edit_profile' %}" method="POST">
                 {% csrf_token %}
                 {{ form.as_p }}
-                <button type="submit" class="btn btn-primary btn-block mt-3">Мәліметтерді жаңарту</button>
+                <button type="submit" class="btn btn-primary btn-block mt-3">Изменить</button>
             </form>
         </div>
 
-
+        <!-- Change Password Link -->
         <div class="mt-4 text-center">
-            <a href="{% url 'accounts:change_password' %}" class="btn btn-link">Құпия сөзді өзгерту</a>
+            <a href="{% url 'accounts:change_password' %}" class="btn btn-link">Изменить пароль</a>
         </div>
 
         <!-- Logout Button -->
         <div class="text-center mt-4">
             <a href="{% url 'accounts:logout' %}" class="btn btn-danger">
-                <i class="fas fa-sign-out-alt"></i> Шығу
+                <i class="fas fa-sign-out-alt"></i> Выйти
             </a>
         </div>
     </div>

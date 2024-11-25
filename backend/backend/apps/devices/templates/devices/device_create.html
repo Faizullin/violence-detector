@@ -1,17 +1,37 @@
 {% extends 'layouts/base.html' %}
 
-{% block title %}Create Device{% endblock %}
+{% block title %}Создать устройство{% endblock %}
 
 {% block content %}
     {% include 'components/header.html' %}
 
-    <main class="container my-4">
-        <h2>Create Device</h2>
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-primary">Create Device</button>
-        </form>
+    <main class="container my-4 flex-column flex-grow-1">
+
+        <!-- Form Header -->
+        <div class="text-center mb-4">
+            <h2 class="text-primary font-weight-bold">Добавить устройство</h2>
+            <p class="text-muted">Добавьте новое устройство и заполните его данные</p>
+        </div>
+
+        <!-- Create Device Form -->
+        <div class="col-md-8 offset-md-2 bg-white p-4 rounded shadow-sm">
+            <form method="post" class="needs-validation" novalidate>
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="id_name" class="font-weight-bold">{{ form.name.label }}</label>
+                    {{ form.name }}
+                    <small class="form-text text-muted">{{ form.name.help_text }}</small>
+                </div>
+                <div class="form-group">
+                    <label for="id_description" class="font-weight-bold">{{ form.description.label }}</label>
+                    {{ form.description }}
+                    <small class="form-text text-muted">{{ form.description.help_text }}</small>
+                </div>
+                <div class="form-group text-center">
+                    <button type="submit" class="btn btn-primary btn-lg">Добавить</button>
+                </div>
+            </form>
+        </div>
     </main>
 
     {% include 'components/footer.html' %}

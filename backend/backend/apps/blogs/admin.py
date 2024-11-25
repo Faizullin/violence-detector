@@ -7,6 +7,7 @@ from utils.admin import BaseAdmin, admin
 
 @admin.register(Blog)
 class BlogAdmin(BaseAdmin):
-    list_display = ("id", 'title', 'description',)
+    list_display = ("id", 'title', 'description', 'is_featured')
     search_fields = ['title', ]
     raw_id_fields = ('author',)
+    list_editable = ['is_featured']

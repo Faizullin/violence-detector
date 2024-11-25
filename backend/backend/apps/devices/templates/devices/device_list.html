@@ -2,38 +2,47 @@
 
 {% load static %}
 
-{% block title %}My Devices{% endblock %}
+{% block title %}Мои устройства{% endblock %}
 
 {% block content %}
     {% include 'components/header.html' %}
 
-    <main>
-        <div style="height: 120px"></div>
+    <main class="py-5 bg-light flex-column flex-grow-1">
     
-        <!----- ############# Device Cards ################ ----->>
-        <div class="container-fluid key-features">
-            <div class="container">
-                <h2 class="text-center my-4">Your Devices</h2>
-                <div class="row key-row">
-                    {% for device in devices %}
-                        <div class="col-md-4">
-                            <div class="device-card">
-                                <div class="card-icon">
-                                    <i class="fas fa-tablet-alt"></i>
-                                </div>
-                                <h4>{{ device.name }}</h4>
-                                <p><strong>Status:</strong> {{ device.status }}</p>
-                                <p><strong>Last Active:</strong> {{ device.last_active }}</p>
-                                <a class="btn btn-primary" href="{%  url 'devices:device-update' pk=device.id %}">Edit</a>
-                            </div>
+        <div class="container">
+    <!-- Device Cards Section -->
+    <div class="text-center mb-4">
+        <h2 class="text-primary font-weight-bold">Ваши устройства</h2>
+    </div>
+
+    <!-- No Devices Found -->
+    {% if devices|length == 0 %}
+    <div class="text-center mb-4">
+        <p class="text-muted">Устройств не найдено.</p>
+        <a href="{% url 'devices:device-create' %}" class="btn btn-primary">Добавить устройство</a>
+    </div>
+    {% else %}
+    <!-- Devices List -->
+    <div class="row">
+        {% for device in devices %}
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body text-center">
+                        <div class="device-icon mb-3">
+                            <i class="fas fa-tablet-alt fa-3x text-primary"></i>
                         </div>
-                        {% empty %}
-                        <div class="col-12 text-center">
-                            <p>No devices found. <a href="#" class="btn btn-primary">Add Device</a></p>
-                        </div>
-                    {% endfor %}
+                        <h5 class="card-title font-weight-bold">{{ device.name }}</h5>
+                        <p class="text-muted">
+                            <strong>Статус:</strong> {{ device.status|default:"Неизвестно" }}<br>
+                            <strong>Последняя активность:</strong> {{ device.last_active|date:"d/m/Y H:i" }}
+                        </p>
+                        <a href="{% url 'devices:device-update' pk=device.id %}" class="btn btn-outline-primary btn-sm mt-3">Просмотр</a>
+                    </div>
                 </div>
             </div>
+        {% endfor %}
+    </div>
+    {% endif %}
         </div>
     </main>
 

@@ -14,21 +14,21 @@
                 <div id="menu" class="navs d-none d-md-block col-md-9">
                     <ul>
                         <li>
-                            <a href="{% url 'pages:home' %}">Басты</a>
+                            <a href="{% url 'pages:home' %}">Главная</a>
                         </li>
                         <li>
                             <a href="{% url 'pages:home' %}#about">
-                                Біз туралы
+                                О нас
                             </a>
                         </li>
                         <li>
                             <a href="{% url 'violence_detection:test_predict' %}">
-                                Тест болжау
+                                Тест прогнозирования
                             </a>
                         </li>
                         <li>
                             <a href="{% url 'violence_detection:prediction_news_list' %}">
-                                Болжау жаңалықтары
+                                Новости прогнозов
                             </a>
                         </li>
                         <li>
@@ -45,7 +45,7 @@
                         {% else %}
                         <li>
                             <a href="{% url 'accounts:login' %}">
-                                Кіру
+                                Войти
                             </a>
                         </li>
                         {% endif %}
@@ -57,4 +57,3 @@
     <div></div>
     <div></div>
 </header>
-

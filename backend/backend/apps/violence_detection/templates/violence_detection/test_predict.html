@@ -1,20 +1,20 @@
 <!-- image_upload.html -->
 {% extends 'layouts/base.html' %}
 
-{% block title %}Image Prediction Test{% endblock %}
+{% block title %}Тест распознования{% endblock %}
 
 {% block content %}
     {% include 'components/header.html' %}
 
-    <main class="py-5 bg-light flex-column flex-grow-0">
+    <main class="py-5 bg-light flex-column flex-grow-1">
         <div class="container mt-5">
-            <h2>Upload an Image</h2>
+            <h2>Загрузите картинку</h2>
             <form id="imageUploadForm" enctype="multipart/form-data">
                 <div class="form-group">
-                    <label for="imageInput">Choose an image to upload</label>
+                    <label for="imageInput">Выберите изображение</label>
                     <input type="file" id="imageInput" name="image" accept="image/*" class="form-control" required>
                 </div>
-                <button type="submit" class="btn btn-primary">Upload</button>
+                <button type="submit" class="btn btn-primary">Загрузить</button>
             </form>
 
             <div id="uploadResult" class="mt-4">
@@ -68,14 +68,14 @@
                     contentType: false,
                     processData: false,
                     success: function (response) {
-                        $('#uploadResult').html('<p class="text-success">Image uploaded successfully!</p>');
+                        $('#uploadResult').html('<p class="text-success">Успешно!</p>');
                         // Display the uploaded image if needed
                         if (response.data) {
                             $('#uploadResult').append(`<p class="img-thumbnail mt-3">${JSON.stringify(response)}</p>`);
                         }
                     },
                     error: function () {
-                        $('#uploadResult').html('<p class="text-danger">Image upload failed. Please try again.</p>');
+                        $('#uploadResult').html('<p class="text-danger">Ошибка.</p>');
                     }
                 });
             });
