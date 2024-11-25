@@ -36,7 +36,7 @@ def main():
     # Define actions
     if action == "build":
         print(f"Building for {env} environment...")
-        run_command(f"docker exec -it {container_name} build")
+        run_command(f"docker-compose -f {compose_file} build")
 
     elif action == "collectstatic":
         print(f"Collecting static files for {env} environment...")
