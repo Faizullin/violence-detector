@@ -30,7 +30,7 @@ def main():
     # Set compose file
     compose_file = f"../backend/docker-compose.{env}.yml"
 
-    container_name = "backend-backend-1"
+    container_name = "backend_backend_1"
     settings_extension = "local" if env == "dev" else "prod"
 
     # Define actions
