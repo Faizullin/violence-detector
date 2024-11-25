@@ -1,6 +1,7 @@
 from .base import *
 
 CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=[])
+CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', default=[])
 
 LOGS_DIR = os.path.join(BASE_DIR, 'logs')
 
