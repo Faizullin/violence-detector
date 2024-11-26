@@ -39,6 +39,4 @@ RUN chmod +x $HOME/entrypoint.sh
 
 COPY . .
 
-RUN python3 init_models.py
-
 ENTRYPOINT ["sh","./entrypoint.sh"]

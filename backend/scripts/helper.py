@@ -36,7 +36,7 @@ def main():
     actions = ["build", "collectstatic", "migrate",
                "seed", "shell", "deploy", "run", "logs", "down"]
     if action not in actions:
-        print(f"Error: Invalid action. Available actions: {", ".join(actions)}")
+        print(f"Error: Invalid action. Available actions: {','.join(actions)}")
         sys.exit(1)
 
     # Define actions
