@@ -131,13 +131,13 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
 # USE_I18N = True
-# LANGUAGE_CODE = env.str('LANGUAGE_CODE', 'en-us')
-LANGUAGE_CODE = 'kk'
+LANGUAGE_CODE = env.str('LANGUAGE_CODE', 'en-us')
 TIME_ZONE = env.str('TIME_ZONE', 'Asia/Almaty')
 
 LANGUAGES = [
     ('kk', _('Kazakh')),
     ('en-us', _('English')),  # Add other languages if necessary
+    ('ru', _('Russian')),  # Add other languages if necessary
 ]
 # PARLER_LANGUAGES = {
 #     None: (

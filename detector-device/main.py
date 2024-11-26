@@ -1,177 +1,277 @@
-import os
+import json
 import queue
-import sys
-import threading
-import time
+import tkinter as tk
+from tkinter import filedialog, messagebox
 
 import cv2
-import requests
 from dotenv import load_dotenv
 
-from model import Model
+from libs.detection_app import DetectionApp
+from libs.model import Model
+from libs.requester import ApiRequester
 
-# Load environment variables from .env file
+API_DEVICE_ID = None
+API_KEY = None
+API_URL = None
+
+
+# Загрузка переменных окружения из файла .env
 load_dotenv()
-API_URL = os.getenv("API_URL")
-API_KEY = os.getenv("API_KEY")
-API_DEVICE_ID = os.getenv("API_DEVICE_ID")
 
 
-class ApiRequester(threading.Thread):
-    """Handles sending API requests for detection events."""
-
-    def __init__(self, api_url, interval=60):
-        super().__init__(daemon=True)
-        self.api_url = api_url
-        self.interval = interval
-        self.last_request_time = 0
-        self.queue = queue.Queue()  # Queue for detection data
-
-    def can_send_request(self):
-        """Check if enough time has passed to send another request."""
-        return (time.time() - self.last_request_time) >= self.interval
-
-    def send_request(self, message, image):
-        """Send a POST request to the specified API URL."""
-        if self.can_send_request():
-            # Prepare data to be sent
-            _, img_encoded = cv2.imencode('.jpg', image)
-            data = {
-                "message": message,
-                "device_id": API_DEVICE_ID,
-            }
-            files = {
-                "image": ("image.jpg", img_encoded.tobytes(), "image/jpeg"),
-            }
-            headers = {
-                "Authorization": f"Api-key {API_KEY}"
-            }
-
-            try:
-                response = requests.post(
-                    self.api_url, data=data, files=files,  headers=headers)
-                if response.status_code == 200:
-                    print("\nAPI Request Successful")
-                else:
-                    print("\nAPI Request Failed {} {}".format(
-                        response.status_code, response.text))
-                self.last_request_time = time.time()
-            except requests.RequestException as e:
-                print(f"\nAPI Request Error: {e}")
-
-    def run(self):
-        """Continuously monitor the queue and send API requests."""
-        while True:
-            try:
-                message, image = self.queue.get(
-                    timeout=1)  # Get item from queue
-                self.send_request(message, image)
-            except queue.Empty:
-                continue  # No items to process, continue the loop
+def load_data():
+    global API_DEVICE_ID, API_KEY, API_URL
+    with open("data.json", "r") as f:
+        data = json.load(f)
+        API_DEVICE_ID = data.get("API_DEVICE_ID")
+        API_KEY = data.get("API_KEY")
+        API_URL = data.get("API_URL")
 
 
-class DetectionApp:
-    def __init__(self, api_requester):
-        # Initialize the model and video capture
-        self.model = Model()
-        self.cap = cv2.VideoCapture(0)
-        self.api_requester = api_requester
+load_data()
 
-        # Detection and request settings
-        self.detection_on = False
-        self.consecutive_detections = 0
-        self.detection_result = "Detection: Off"
 
-        # Start the detection thread
-        self.detection_thread = threading.Thread(
-            target=self._detection_thread, daemon=True)
-        self.detection_thread.start()
+class App:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Программа Детекции")
+        self.root.geometry("600x700")
+        self.root.config(bg="#F5F5F5")
 
-    def toggle_detection(self):
-        """Toggle detection on or off."""
-        self.detection_on = not self.detection_on
-        print(f"\n{'Detection on' if self.detection_on else 'Detection off'}")
+        # Инициализация APIRequester, Model и DetectionApp с очередью для общения между процессами
+        self.queue = queue.Queue()  # Очередь для межпроцессного общения
+        self.api_requester = ApiRequester(self.queue, api_device_id=API_DEVICE_ID, api_key=API_KEY,
+                                          api_url=API_URL)
+        self.api_requester.start()
 
-    def _run_detection(self, frame):
-        """Run the model prediction and handle detection result."""
-        result = self.model.predict(frame)
-        prediction1_keywords = ["violence", "fire", "fight", "crash"]
+        self.model = Model()  # Предполагается, что Model — это обработчик модели
+        self.detection_app = DetectionApp(
+            self.queue, self.model, self.api_requester)
 
-        tt = False
-        for i in prediction1_keywords:
-            if i in result["label"]:
-                tt = True
-                break
+        # Инициализация кнопок и компонентов интерфейса
+        self.api_key_entry = None
+        self.device_id_entry = None
+        self.submit_button = None
+        self.upload_button = None
+        self.save_checkbox1 = None
+        self.save_checkbox2 = None
+        self.result_label = None
+        self.file_path = None
+        self.camera_running = False  # Для отслеживания состояния камеры
 
-        # Check if result indicates a detection
-        if tt and result["confidence"] > 0.2:
-            self.consecutive_detections += 1
+        # Пропустить первую страницу, если .env уже содержит значения
+        if API_KEY and API_DEVICE_ID:
+            self.show_main_page()
         else:
-            self.consecutive_detections = 0
+            self.show_first_page(intialize=True)
 
-        # Update detection result for display
-        self.detection_result = f"Detection: {result}"
+    def show_first_page(self, intialize=False):
+        """Первая страница для ввода API ключа и ID устройства"""
+        self.clear_window()
 
-        # Check for 4 consecutive detections and add to request queue
-        if self.consecutive_detections >= 4 and self.api_requester.can_send_request():
-            self.api_requester.queue.put(("Detection occurred", frame))
-            self.consecutive_detections = 0  # Reset after sending to the queue
+        self.title_label = tk.Label(self.root, text="Введите данные API", font=(
+            "Arial", 16, "bold"), bg="#F5F5F5")
+        self.title_label.pack(pady=20)
 
-    def _detection_thread(self):
-        """Thread function for handling detection independently."""
-        while True:
-            if self.detection_on:
-                ret, frame = self.cap.read()
-                if ret:
-                    self._run_detection(frame)
-            time.sleep(0.1)
+        self.api_key_label = tk.Label(self.root, text="API ключ", bg="#F5F5F5")
+        self.api_key_label.pack()
+        self.api_key_entry = tk.Entry(self.root, relief="solid", width=30)
+        self.api_key_entry.pack(pady=5)
 
-    def display_frame(self):
-        """Main loop to display frames and handle key events."""
-        print("Press 'b' to toggle detection on/off. Press 'ESC' to quit.")
+        self.device_id_label = tk.Label(
+            self.root, text="ID устройства", bg="#F5F5F5")
+        self.device_id_label.pack()
+        self.device_id_entry = tk.Entry(self.root, relief="solid", width=30)
+        self.device_id_entry.pack(pady=5)
 
-        while True:
-            # Capture frame-by-frame
-            ret, frame = self.cap.read()
-            if not ret:
-                print("Failed to capture image")
-                break
+        self.submit_button = tk.Button(
+            self.root, text="Отправить", command=self.save_api_details, bg="#4CAF50", fg="white")
+        self.submit_button.pack(pady=10)
 
-            # Display the resulting frame
-            cv2.imshow("Real-Time Capture", frame)
+        if not intialize:
+            self.back_button = tk.Button(
+                self.root, text="Назад", command=self.show_main_page, bg="#FF5722", fg="white")
+            self.back_button.pack(pady=10)
 
-            # Print detection result in the same place using stdout
-            sys.stdout.write("\r" + self.detection_result)
-            sys.stdout.flush()
+    def save_api_details(self):
+        """Сохранить данные API в json файл"""
+        global API_URL, API_KEY, API_DEVICE_ID
+        API_KEY = self.api_key_entry.get()
+        API_DEVICE_ID = self.device_id_entry.get()
 
-            # Wait for a key press and check for window close
-            key = cv2.waitKey(1) & 0xFF
-            if cv2.getWindowProperty("Real-Time Capture", cv2.WND_PROP_VISIBLE) < 1:
-                break
+        with open('data.json', 'w') as f:
+            json.dump({
+                "API_KEY": API_KEY,
+                "API_URL": API_URL,
+                "API_DEVICE_ID": API_DEVICE_ID,
+            }, f)
 
-            # Toggle detection on/off if 'b' is pressed
-            if key == ord('b'):
-                self.toggle_detection()
+        self.api_requester.api_key = API_KEY
+        self.api_requester.api_device_id = API_DEVICE_ID
+        self.api_requester.api_url = API_URL
 
-            # Exit if 'ESC' is pressed
-            elif key == 27:  # ESC key
-                break
+        messagebox.showinfo("Успех", "Данные API успешно сохранены!")
+        self.show_main_page()
 
-        # Release the capture and close windows
-        self.cap.release()
-        cv2.destroyAllWindows()
+    def show_main_page(self):
+        """Главная страница с переходом к другим страницам"""
+        self.clear_window()
 
-    def run(self):
-        """Run the main display loop."""
-        self.display_frame()
+        self.main_label = tk.Label(self.root, text="Главная страница", font=(
+            "Arial", 18, "bold"), bg="#F5F5F5")
+        self.main_label.pack(pady=20)
+
+        self.process_button = tk.Button(
+            self.root, text="Обработать изображение", command=self.show_second_page, bg="#2196F3", fg="white")
+        self.process_button.pack(pady=10)
+
+        self.camera_button = tk.Button(
+            self.root, text="Открыть камеру", command=self.show_third_page, bg="#FF5722", fg="white")
+        self.camera_button.pack(pady=10)
+
+        self.env_button = tk.Button(
+            self.root, text="Настройки", command=self.show_first_page, bg="#FFC107", fg="white")
+        self.env_button.pack(pady=10)
+
+    def show_second_page(self):
+        """Вторая страница для загрузки и обработки изображения"""
+        self.clear_window()
+
+        self.file_path = None
+
+        self.image_label = tk.Label(
+            self.root, text="Загрузите изображение для обработки", font=("Arial", 14), bg="#F5F5F5")
+        self.image_label.pack(pady=20)
+
+        self.upload_button = tk.Button(
+            self.root, text="Загрузить изображение", command=self.upload_image, bg="#4CAF50", fg="white")
+        self.upload_button.pack(pady=10)
+
+        self.file_label = tk.Label(
+            self.root, text="Файл не выбран", bg="#F5F5F5")
+        self.file_label.pack()
+
+        self.save_checkbox1_val = tk.BooleanVar()
+        self.save_checkbox1 = tk.Checkbutton(
+            self.root, text="Сохранить изображение", variable=self.save_checkbox1_val, bg="#F5F5F5")
+        self.save_checkbox1.pack(pady=10)
+
+        self.submit_button = tk.Button(
+            self.root, text="Обработать изображение", command=self.process_image, bg="#2196F3", fg="white")
+        self.submit_button.pack(pady=10)
+
+        # Добавить кнопку "Назад"
+        self.back_button = tk.Button(
+            self.root, text="Назад", command=self.show_main_page, bg="#FF5722", fg="white")
+        self.back_button.pack(pady=10)
+
+    def upload_image(self):
+        """Загрузить изображение"""
+        self.file_path = filedialog.askopenfilename(
+            filetypes=[("Image Files", "*.png;*.jpg;*.jpeg")])
+        self.file_label.config(text=self.file_path)
+
+    def process_image(self):
+        """Обработать изображение с помощью модели и отправить запрос на сервер"""
+        self.submit_button.config(
+            state="disabled", text="Обработка...")  # Отключить кнопку во время обработки
+
+        if not self.file_path:
+            messagebox.showerror("Ошибка", "Изображение не выбрано!")
+            self.submit_button.config(
+                state="normal", text="Обработать изображение")
+            return
+
+        # Обработка изображения с помощью модели (Clip)
+        image = cv2.imread(self.file_path)
+        result1 = self.detection_app.detect_from_image(image)
+        print("результат", result1)
+
+        # Отображение результата на второй странице
+        self.result_label = tk.Label(
+            self.root, text=f"Результат предсказания: {result1}", font=("Arial", 12), bg="#F5F5F5")
+        self.result_label.pack(pady=10)
+
+        # Проверка состояния флажка
+        # Получить состояние флажка (True или False)
+        save_to_server = self.save_checkbox1_val.get()
+
+        data = {
+            "prediction1": json.dumps({
+                "prediction": result1,
+            }),
+            "device_id": API_DEVICE_ID,
+            "save_to_server": save_to_server,
+        }
+
+        # Отправить запрос в зависимости от значения флажка (сохранить на сервере или нет)
+        result2 = self.api_requester.send_request_api(data, image)
+
+        # Обработка ответа от сервера (опционально: показать дополнительную информацию, если успешно)
+        if result2 and result2.status_code == 200:
+            result2_text = "Ответ сервера: \n"
+
+            result2_json = result2.json()
+            pred_data = result2_json['data']['pred']
+            result2_text += "Обнаружено: " + pred_data['prediction1']['prediction']['label'] + " с уверенностью: " + str(
+                round(pred_data['prediction1']['prediction']['confidence'], 4)) + "\n"
+            result2_text += "Обнаружено: " + pred_data['prediction2'][0]['message'] + " с уверенностью: " + str(
+                round(pred_data['prediction2'][0]['prediction'], 4)) + "\n"
+            result2_text += "Предсказания сохранены: " + \
+                ("сохранено" if result2_json['data']
+                 ['saved'] else "не сохранено") + "\n"
+            result2_text += "Новости сохранены: " + \
+                ("сохранено" if result2_json['data']
+                 ['news_saved'] else "не сохранено") + "\n"
+            self.result_label.config(text=result2_text)
+
+        self.submit_button.config(
+            state="normal", text="Обработать изображение")  # Включить кнопку
+
+    def show_third_page(self):
+        """Третья страница для камеры"""
+        self.clear_window()
+
+        self.title_label = tk.Label(
+            self.root, text="Открыть камеру для обработки", font=("Arial", 14, "bold"), bg="#F5F5F5")
+        self.title_label.pack(pady=20)
+
+        self.start_button = tk.Button(
+            self.root, text="Начать съемку", command=self.start_camera, bg="#4CAF50", fg="white")
+        self.start_button.pack(pady=10)
+
+        self.stop_button = tk.Button(
+            self.root, text="Остановить съемку", command=self.stop_camera, bg="#FF5722", fg="white")
+        self.stop_button.pack(pady=10)
+
+        self.back_button = tk.Button(
+            self.root, text="Назад", command=self.show_main_page, bg="#FFC107", fg="white")
+        self.back_button.pack(pady=10)
+
+    def start_camera(self):
+        """Запуск камеры"""
+        if self.camera_running:
+            return
+
+        self.camera_running = True
+        self.detection_app.start_camera()
+
+    def stop_camera(self):
+        """Остановка камеры"""
+        if not self.camera_running:
+            return
+
+        self.camera_running = False
+        self.detection_app.stop_camera()
+
+    def clear_window(self):
+        """Очистить окно"""
+        for widget in self.root.winfo_children():
+            widget.destroy()
 
 
-# To run the application:
+# Создание и запуск главного окна
 if __name__ == "__main__":
-    # Initialize the ApiRequester with the API URL from the .env file
-    api_requester = ApiRequester(api_url=API_URL, interval=60)
-    api_requester.start()  # Start the API requester thread
-
-    # Initialize and run the DetectionApp
-    app = DetectionApp(api_requester)
-    app.run()
+    root = tk.Tk()
+    app = App(root)
+    root.mainloop()

@@ -33,6 +33,12 @@ def main():
     container_name = "backend_backend_1"
     settings_extension = "local" if env == "dev" else "prod"
 
+    actions = ["build", "collectstatic", "migrate",
+               "seed", "shell", "deploy", "run", "logs", "down"]
+    if action not in actions:
+        print(f"Error: Invalid action. Available actions: {", ".join(actions)}")
+        sys.exit(1)
+
     # Define actions
     if action == "build":
         print(f"Building for {env} environment...")
@@ -65,20 +71,21 @@ def main():
         run_command(f"docker-compose -f {compose_file} pull")
         run_command(f"docker-compose -f {compose_file} up -d --build")
         print("Deployment complete!")
-      
+
     elif action == "run":
         print(f"Running to {env} environment...")
         run_command(f"docker-compose -f {compose_file} down")
         run_command(f"docker-compose -f {compose_file} up --build")
         print("Run complete!")
-        
+
     elif action == "logs":
         print(f"Running to {env} environment...")
         run_command(f"docker-compose -f {compose_file} logs")
-
-    else:
-        print("Error: Invalid action. Available actions: build, collectstatic, migrate, seed, shell, deploy, run, logs")
-        sys.exit(1)
+        
+    elif action == "down":
+        print(f"Stopping containers...")
+        run_command(f"docker-compose -f {compose_file} down")
+        print("Containers stopped!")
 
 
 if __name__ == "__main__":
