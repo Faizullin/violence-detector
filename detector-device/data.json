@@ -1,1 +1,5 @@
-{"API_KEY": "uWTU8CWE.fwraesVoyqn87TDrAoDF9a4llphRgI9t", "API_URL": "http://localhost:8000/api/v1/detector/violence/predict/device", "API_DEVICE_ID": "1"}
+{
+    "API_KEY": "",
+    "API_URL": "https://vids.kz/api/v1/detector/violence/predict/device",
+    "API_DEVICE_ID": ""
+}

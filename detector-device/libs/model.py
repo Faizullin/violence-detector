@@ -28,6 +28,7 @@ class Model:
 
     @torch.no_grad()
     def transform_image(self, image: np.ndarray):
+        
         pil_image = Image.fromarray(image).convert('RGB')
         tf_image = self.preprocess(pil_image).unsqueeze(0).to(self.device)
         return tf_image

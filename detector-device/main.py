@@ -4,6 +4,7 @@ import tkinter as tk
 from tkinter import filedialog, messagebox
 
 import cv2
+import numpy as np
 from dotenv import load_dotenv
 
 from libs.detection_app import DetectionApp
@@ -183,9 +184,12 @@ class App:
             return
 
         # Обработка изображения с помощью модели (Clip)
-        image = cv2.imread(self.file_path)
+        with open(self.file_path, "rb") as f:
+            image_bytes = f.read()
+            image_np = np.frombuffer(image_bytes, dtype=np.uint8)
+            image = cv2.imdecode(image_np, cv2.IMREAD_COLOR)
+
         result1 = self.detection_app.detect_from_image(image)
-        print("результат", result1)
 
         # Отображение результата на второй странице
         self.result_label = tk.Label(
@@ -244,25 +248,43 @@ class App:
             self.root, text="Остановить съемку", command=self.stop_camera, bg="#FF5722", fg="white")
         self.stop_button.pack(pady=10)
 
+        self.save_checkbox2_val = tk.BooleanVar()
+        self.save_checkbox2_val.trace_add(
+            "write", self.on_save_checkbox2_val_change)
+        self.save_checkbox2 = tk.Checkbutton(
+            self.root, text="Включить распознование", variable=self.save_checkbox2_val, bg="#F5F5F5")
+        self.save_checkbox2.pack(pady=10)
+
         self.back_button = tk.Button(
             self.root, text="Назад", command=self.show_main_page, bg="#FFC107", fg="white")
         self.back_button.pack(pady=10)
 
+    def on_save_checkbox2_val_change(self, *args, **kwargs):
+        new_state = self.save_checkbox2_val.get()
+        print("trigger",  *args, **kwargs, new_state)
+        self.detection_app.toggle_model_processing(new_state)
+        self.api_requester.save_to_server = bool(
+            self.detection_app.model_processing_on)
+
     def start_camera(self):
         """Запуск камеры"""
-        if self.camera_running:
-            return
-
-        self.camera_running = True
-        self.detection_app.start_camera()
+        camera_running = bool(
+            self.detection_app.detection_on or self.camera_running)
+        if not camera_running:
+            self.detection_app.toggle_detection(True)
+            self.detection_app.toggle_model_processing(True)
+            self.detection_app.start_frame()
+        else:
+            messagebox.showerror("Ошибка", "Камера уже запущена!")
 
     def stop_camera(self):
         """Остановка камеры"""
-        if not self.camera_running:
-            return
-
-        self.camera_running = False
-        self.detection_app.stop_camera()
+        camera_running = bool(
+            self.detection_app.detection_on or self.camera_running)
+        if camera_running:
+            self.detection_app.toggle_detection(False)
+        else:
+            messagebox.showerror("Ошибка", "Камера не запущена")
 
     def clear_window(self):
         """Очистить окно"""
