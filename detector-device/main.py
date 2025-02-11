@@ -4,6 +4,7 @@ import tkinter as tk
 from tkinter import filedialog, messagebox
 
 import cv2
+from libs.locations_app import LocationsApp
 import numpy as np
 from dotenv import load_dotenv
 
@@ -41,13 +42,15 @@ class App:
 
         # Инициализация APIRequester, Model и DetectionApp с очередью для общения между процессами
         self.queue = queue.Queue()  # Очередь для межпроцессного общения
-        self.api_requester = ApiRequester(self.queue, api_device_id=API_DEVICE_ID, api_key=API_KEY,
+        self.api_requester = ApiRequester(self, api_device_id=API_DEVICE_ID, api_key=API_KEY,
                                           api_url=API_URL)
         self.api_requester.start()
 
         self.model = Model()  # Предполагается, что Model — это обработчик модели
         self.detection_app = DetectionApp(
             self.queue, self.model, self.api_requester)
+        
+        self.locations_app = LocationsApp()
 
         # Инициализация кнопок и компонентов интерфейса
         self.api_key_entry = None
@@ -261,7 +264,7 @@ class App:
 
     def on_save_checkbox2_val_change(self, *args, **kwargs):
         new_state = self.save_checkbox2_val.get()
-        print("trigger",  *args, **kwargs, new_state)
+        print("trigger",  *args, **kwargs)
         self.detection_app.toggle_model_processing(new_state)
         self.api_requester.save_to_server = bool(
             self.detection_app.model_processing_on)

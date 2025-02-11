@@ -1,13 +1,13 @@
 from django.contrib.auth import get_user_model
 
-from apps.devices.models import Device
+from apps.devices.models import Device, AbstractLocationModel
 from apps.file_system.models import File
 from utils.models import AbstractTimestampedModel, models
 
 UserModel = get_user_model()
 
 
-class PredictionAttempt(AbstractTimestampedModel):
+class PredictionAttempt(AbstractTimestampedModel,AbstractLocationModel):
     device = models.ForeignKey(Device, on_delete=models.SET_NULL, null=True)
     device_name = models.CharField(max_length=255)
     image = models.ForeignKey(File, on_delete=models.SET_NULL, null=True)

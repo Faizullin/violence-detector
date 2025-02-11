@@ -13,12 +13,18 @@ class PredictionRequestBaseSerializer(serializers.Serializer):
 class Prediction1InputSerializer(serializers.Serializer):
     label = serializers.CharField()
     confidence = serializers.FloatField()
+    
+    
+class LocationsSerializer(serializers.Serializer):
+    lat = serializers.FloatField()
+    lng = serializers.FloatField()
 
 
 class PredictionRequestSerializer(PredictionRequestBaseSerializer):
     prediction1 = serializers.CharField()
     device_id = PrimaryKeyRelatedField(queryset=Device.objects.all())
     save_to_server = serializers.BooleanField()
+    location = LocationsSerializer()
 
     # def validate_image(self, value):
     #

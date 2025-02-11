@@ -7,11 +7,19 @@ from utils.models import AbstractTimestampedModel
 UserModel = get_user_model()
 
 
-class Device(AbstractTimestampedModel):
+class AbstractLocationModel(models.Model):
+    lang = models.FloatField(blank=True, null=True)
+    lat = models.FloatField(blank=True, null=True)
+
+    class Meta:
+        abstract = True
+
+
+class Device(AbstractTimestampedModel, AbstractLocationModel):
     name = models.CharField(max_length=255)
     description = models.TextField()
     user = models.ForeignKey(UserModel, on_delete=models.CASCADE)
-    last_active = models.DateTimeField(verbose_name="Последняя активность" , null=True, blank=True)
+    last_active = models.DateTimeField(verbose_name="Последняя активность", null=True, blank=True)
     news_create_allowed = models.BooleanField(default=False)
 
 

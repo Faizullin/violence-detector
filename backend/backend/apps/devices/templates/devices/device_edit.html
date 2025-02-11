@@ -7,7 +7,7 @@
 
     <main class="container my-4">
         <div class="container">
-             <!-- Form Header -->
+            <!-- Form Header -->
             <div class="text-center mb-4">
                 <h2 class="text-primary font-weight-bold">Редактировать устройство: #{{ device.id }}</h2>
             </div>
@@ -26,6 +26,16 @@
                         {{ form.description }}
                         <small class="form-text text-muted">{{ form.description.help_text }}</small>
                     </div>
+                    <div class="form-group position-lang-field">
+                        <label for="id_position_lang" class="font-weight-bold">{{ form.lang.label }}</label>
+                        {{ form.lang }}
+                        <small class="form-text text-muted">{{ form.lang.help_text }}</small>
+                    </div>
+                    <div class="form-group position-lat-field">
+                        <label for="id_position_lat" class="font-weight-bold">{{ form.lat.label }}</label>
+                        {{ form.lat }}
+                        <small class="form-text text-muted">{{ form.lat.help_text }}</small>
+                    </div>
                     <div class="form-group text-center">
                         <button type="submit" class="btn btn-primary btn-lg">Сохранить</button>
                     </div>
@@ -34,13 +44,15 @@
 
             <!-- API Key Request Button -->
             <div class="text-center mt-4">
-                <button type="button" class="btn btn-outline-secondary btn-lg" data-toggle="modal" data-target="#apiKeyModal">
+                <button type="button" class="btn btn-outline-secondary btn-lg" data-toggle="modal"
+                        data-target="#apiKeyModal">
                     API ключ
                 </button>
             </div>
 
             <!-- API Key Modal -->
-            <div class="modal fade" id="apiKeyModal" tabindex="-1" role="dialog" aria-labelledby="apiKeyModalLabel" aria-hidden="true">
+            <div class="modal fade" id="apiKeyModal" tabindex="-1" role="dialog" aria-labelledby="apiKeyModalLabel"
+                 aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -63,25 +75,25 @@
 {% endblock %}
 
 {% block extra_js %}
-<script>
-    $(document).ready(function () {
-        $('#generateApiKey').on('click', function () {
-            $.ajax({
-                url: "{% url 'devices:api_key_regenerate' id=device.id %}",
-                method: "POST",
-                headers: {
-                    "X-CSRFToken": "{{ csrf_token }}"
-                },
-                success: function (response) {
-                    $('#apiKeyResponse').removeClass('d-none alert-danger').addClass('alert-success')
-                        .text('API ключ: ' + response.data.hashed_key);
-                },
-                error: function () {
-                    $('#apiKeyResponse').removeClass('d-none alert-success').addClass('alert-danger')
-                        .text('Ошибка.');
-                }
+    <script>
+        $(document).ready(function () {
+            $('#generateApiKey').on('click', function () {
+                $.ajax({
+                    url: "{% url 'devices:api_key_regenerate' id=device.id %}",
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": "{{ csrf_token }}"
+                    },
+                    success: function (response) {
+                        $('#apiKeyResponse').removeClass('d-none alert-danger').addClass('alert-success')
+                            .text('API ключ: ' + response.data.hashed_key);
+                    },
+                    error: function () {
+                        $('#apiKeyResponse').removeClass('d-none alert-success').addClass('alert-danger')
+                            .text('Ошибка.');
+                    }
+                });
             });
         });
-    });
-</script>
+    </script>
 {% endblock %}

@@ -9,6 +9,19 @@
         <div class="container">
             <h2 class="mb-4">Последние обновления</h2>
 
+
+            <!-- Tabs with Navigation -->
+            <ul class="nav nav-tabs">
+                <li class="nav-item">
+                    <a class="nav-link  {% if request.resolver_match.view_name  == 'violence_detection:prediction_news_list' %}active{% endif %}"
+                       href="{% url 'violence_detection:prediction_news_list' %}">Лента</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.view_name  == 'violence_detection:prediction_news_map' %}active{% endif %}"
+                       href="{% url 'violence_detection:prediction_news_map' %}">Карта</a>
+                </li>
+            </ul>
+
             <div class="row">
                 {% for latest_available_news_item in latest_available_news %}
                     <div class="col-md-4 mb-4">
@@ -95,9 +108,9 @@
         .news_list-page .news_item_date {
             color: #1965fd;
         }
-        
+
     </style>
-    
+
     {% include 'components/footer.html' %}
 
 {% endblock %}

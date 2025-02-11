@@ -11,14 +11,15 @@ class ApiRequester(threading.Thread):
     """Handles sending API requests for detection events."""
     save_to_server: bool = False
 
-    def __init__(self, queue, api_device_id, api_key, api_url, interval=60):
+    def __init__(self, parent_app, api_device_id, api_key, api_url, interval=60):
         super().__init__(daemon=True)
         self.api_device_id = api_device_id
         self.api_key = api_key
         self.api_url = api_url
         self.interval = interval
         self.last_request_time = 0
-        self.queue = queue
+        self.parent_app = parent_app
+        self.queue = parent_app.queue
 
     def can_send_request(self):
         """Check if enough time has passed to send another request."""
@@ -56,6 +57,7 @@ class ApiRequester(threading.Thread):
                 }),
                 "device_id": self.api_device_id,
                 "save_to_server": self.save_to_server,
+                "location": self.parent_app.get_current_location()
             }
             res = self.send_request_api(data, image,)
             self.last_request_time = time.time()

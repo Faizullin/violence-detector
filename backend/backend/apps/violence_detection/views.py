@@ -1,17 +1,19 @@
 import json
 
-from apps.devices.models import Device
-from apps.file_system.models import File
+import django_filters
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.utils import timezone
 from django.views.generic import ListView
-from rest_framework import permissions, status
+from rest_framework import permissions, status, serializers
+from rest_framework.filters import OrderingFilter
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_api_key.permissions import HasAPIKey
 
+from apps.devices.models import Device
+from apps.file_system.models import File
 from .models import News, Prediction, PredictionAttempt
 
 use_detection = settings.USE_VIOLENCE_DETECTION
@@ -21,6 +23,7 @@ if use_detection:
     from .violence_detection.utils.image import imdecode
     from .violence_detection.violence_alarm_detection.detector import \
         ViolenceAlarmDetector
+
     # removed because to heavy
     # from .violence_detection.violence_basic_detection.detector import \
     #     ViolenceBasicDetector
@@ -38,7 +41,7 @@ def generate_news_for_prediction_attempt(obj: PredictionAttempt):
         title="",
     )
     news_obj.title = "Инцидент " + str(news_obj.id)
-    
+
     preds = news_obj.prediction_attempt.prediction_set.all()
     if len(preds) != 2:
         raise ValueError("Incorrect number of predictions in database.")
@@ -77,8 +80,6 @@ class PredictApiView(APIView):
             return Response({
                 "message": "Image format error!",
             }, status=status.HTTP_400_BAD_REQUEST)
-
-
 
         # prediction1 = basic_detector.detect_image(image)
         prediction2 = alarm_detector.detect_image(image)
@@ -187,12 +188,75 @@ def test_predict(request):
     return render(request, "violence_detection/test_predict.html")
 
 
+def get_news_qs():
+    return News.objects.order_by('-updated_at').prefetch_related(
+        "prediction_attempt").prefetch_related("prediction_attempt__prediction_set")
+
+
 class RecentDetectionsView(ListView):
     # model = News
     template_name = "violence_detection/news_list.html"
     context_object_name = "latest_available_news"
+
     # paginate_by = 1
 
     def get_queryset(self):
-        return News.objects.order_by('-updated_at').prefetch_related(
-            "prediction_attempt").prefetch_related("prediction_attempt__prediction_set")
+        return get_news_qs()
+
+
+class RecentDetectionsMapView(ListView):
+    # model = News
+    template_name = "violence_detection/news_map.html"
+    context_object_name = "latest_available_news"
+
+    # paginate_by = 1
+
+    def get_queryset(self):
+        return get_news_qs()
+
+    def get_context_data(
+            self, *, object_list=..., **kwargs
+    ):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            "devices": Device.objects.all(),
+        })
+        return context
+
+
+class NewsSerializer(serializers.ModelSerializer):
+    device_name = serializers.CharField(source="prediction_attempt.device_name", read_only=True)
+    lat = serializers.FloatField(source="prediction_attempt.lat", read_only=True)
+    lang = serializers.FloatField(source="prediction_attempt.lang", read_only=True)
+    device_id = serializers.CharField(source="prediction_attempt.device_id", read_only=True)
+
+    class Meta:
+        model = News
+        fields = ["title", "description", "device_id", "device_name", "lat", "lang", "created_at", "updated_at"]
+
+
+class NewsFilter(django_filters.FilterSet):
+    start_date = django_filters.DateFilter(field_name="updated_at", lookup_expr="gte")
+    end_date = django_filters.DateFilter(field_name="updated_at", lookup_expr="lte")
+    device_id = django_filters.CharFilter(field_name="prediction_attempt__device")
+
+    class Meta:
+        model = News
+        fields = ["start_date", "end_date", "device_id"]
+
+
+class MapApiView(APIView):
+    def get(self, request, *args, **kwargs):
+        queryset = get_news_qs()
+
+        # Apply filters
+        filterset = NewsFilter(request.GET, queryset=queryset)
+        if filterset.is_valid():
+            queryset = filterset.qs
+
+        # Apply ordering
+        ordering_backend = OrderingFilter()
+        queryset = ordering_backend.filter_queryset(request, queryset, self)
+
+        serializer = NewsSerializer(queryset, many=True)
+        return Response(serializer.data)

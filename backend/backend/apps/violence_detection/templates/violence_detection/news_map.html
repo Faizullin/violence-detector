@@ -1,0 +1,159 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% block title %}Лента{% endblock %}
+
+{% block content %}
+    {% include 'components/header.html' %}
+
+    <main class="news_list-page py-5 bg-light flex-column flex-grow-1">
+        <div class="container">
+            <h2 class="mb-4">Последние обновления</h2>
+
+
+            <!-- Tabs with Navigation -->
+            <ul class="nav nav-tabs">
+                <li class="nav-item">
+                    <a class="nav-link  {% if request.resolver_match.view_name  == 'violence_detection:prediction_news_list' %}active{% endif %}"
+                       href="{% url 'violence_detection:prediction_news_list' %}">Лента</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.view_name  == 'violence_detection:prediction_news_map' %}active{% endif %}"
+                       href="{% url 'violence_detection:prediction_news_map' %}">Карта</a>
+                </li>
+            </ul>
+
+            <div class="row g-2">
+                <div class="col-md-3">
+                    <label for="device" class="form-label">Устройство:</label>
+                    <select id="device" class="form-control">
+                        <option value="">Все устройства</option>
+                        {% for device in devices %}
+                            <option value="{{ device.id }}">{{ device.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label for="start_date" class="form-label">Дата начала:</label>
+                    <input type="date" id="start_date" class="form-control">
+                </div>
+
+                <div class="col-md-3">
+                    <label for="end_date" class="form-label">Дата окончания:</label>
+                    <input type="date" id="end_date" class="form-control">
+                </div>
+            </div>
+            <div>
+                <div class="d-flex align-items-end">
+                    <button id="filterButton" class="btn btn-primary">Фильтр</button>
+                </div>
+            </div>
+
+            <div class="">
+                <div id="map-container"></div>
+            </div>
+        </div>
+    </main>
+
+
+    <style>
+        #map-container {
+            min-height: 500px;
+        }
+
+        .news_list-page .news_item_date {
+            color: #1965fd;
+        }
+
+        .device-name {
+            cursor: pointer;
+        }
+
+        .device-name:hover {
+            text-decoration: underline !important;
+            color: #1965fd !important;
+        }
+
+    </style>
+
+    {% include 'components/footer.html' %}
+    </script>
+
+{% endblock %}
+
+{% block extra_js %}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script>
+        const CUrls = {
+            load_api: "{% url 'violence_detection:locations-data-api' %}"
+        }
+        $(document).ready(function () {
+            const initialData = [51.169392, 71.449074];
+            var map = L.map('map-container').setView(initialData, 11);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {}).addTo(map);
+
+            var markersLayer = L.layerGroup().addTo(map); // Группа маркеров
+
+            function loadData() {
+                markersLayer.clearLayers(); // Очистить маркеры
+
+                // Получить значения фильтров
+                var device = $("#device").val();
+                var startDate = $("#start_date").val();
+                var endDate = $("#end_date").val();
+                var minConfidence = $("#min_confidence").val();
+
+                // Построить URL с параметрами
+                var queryParams = $.param({
+                    device_id: device,
+                    start_date: startDate,
+                    end_date: endDate,
+                    min_confidence: minConfidence
+                });
+
+                // Получение данных через AJAX
+                $.getJSON(CUrls.load_api + "?" + queryParams, function (data) {
+                    if (data.length === 0) {
+                        alert("Нет инцидентов по выбранным фильтрам.");
+                    }
+
+                    data.forEach(function (item) {
+                        if (item.lat && item.lang) {
+                            let dateTime = item.updated_at;
+
+                            var marker = L.marker([item.lat, item.lang])
+                                .addTo(markersLayer)
+                                .bindPopup(`
+                                    <b>${item.title}</b><br>
+                                    ${item.description}<br>
+                                    <b>Устройство:</b> <a class="device-name" data-device-id="${item.device_id}">${item.device_name}</a><br>
+                                    <b>Время:</b> ${dateTime}<br>
+                                `);
+                        }
+                    });
+                }).fail(function () {
+                    alert("Ошибка загрузки данных.");
+                });
+            }
+
+            // Загрузка данных при старте
+            loadData();
+
+            // Фильтрация данных по кнопке
+            $("#filterButton").click(function () {
+                loadData();
+            });
+
+            $(document).on('click', '.device-name', function () {
+                var deviceId = $(this).data('device-id');
+                $("#device").val(deviceId);
+                loadData();
+            });
+
+        });
+    </script>
+{% endblock %}
