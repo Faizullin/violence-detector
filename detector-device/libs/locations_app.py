@@ -20,4 +20,4 @@ class LocationsApp:
         
     def get_current_location(self):
         coords = get_win_location()
-        return {"lat": coords[0], "lng": coords[1]}
+        return {"lat": coords[0], "lang": coords[1]}

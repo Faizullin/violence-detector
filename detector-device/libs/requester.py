@@ -50,6 +50,7 @@ class ApiRequester(threading.Thread):
     def send_request(self, result_data, image):
         """Send a POST request to the specified API URL."""
         if self.can_send_request():
+            loc = self.parent_app.get_current_location()
             data = {
                 "prediction1": json.dumps({
 
@@ -57,7 +58,8 @@ class ApiRequester(threading.Thread):
                 }),
                 "device_id": self.api_device_id,
                 "save_to_server": self.save_to_server,
-                "location": self.parent_app.get_current_location()
+                "location_lat": loc['lat'],
+                "location_lang": loc['lang'],
             }
             res = self.send_request_api(data, image,)
             self.last_request_time = time.time()

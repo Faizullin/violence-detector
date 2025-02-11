@@ -203,12 +203,15 @@ class App:
         # Получить состояние флажка (True или False)
         save_to_server = self.save_checkbox1_val.get()
 
+        loc = self.locations_app.get_current_location()
         data = {
             "prediction1": json.dumps({
                 "prediction": result1,
             }),
             "device_id": API_DEVICE_ID,
             "save_to_server": save_to_server,
+            "location_lat": loc['lat'],
+            "location_lang": loc['lang'],
         }
 
         # Отправить запрос в зависимости от значения флажка (сохранить на сервере или нет)

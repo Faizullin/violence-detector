@@ -1,5 +1,1 @@
-{
-    "API_KEY": "",
-    "API_URL": "https://vids.kz/api/v1/detector/violence/predict/device",
-    "API_DEVICE_ID": ""
-}
+{"API_KEY": "ve4vFBji.5I9EJM0PkOJPhkVyhvzHIooaXV2q8P77", "API_URL": "https://vids.kz/api/v1/detector/violence/predict/device", "API_DEVICE_ID": "1"}
