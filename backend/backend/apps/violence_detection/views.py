@@ -92,6 +92,8 @@ class PredictApiView(APIView):
                 device=device,
                 device_name=device.name,
                 image=file_obj,
+                lat = serializer.validated_data.get("location_lat"),
+                lang = serializer.validated_data.get("location_lang"),
             )
             prediction1_obj = Prediction.objects.create(
                 type="basic",
